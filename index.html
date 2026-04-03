@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Cultural AI Values Alignment Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="data.js"></script>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-card: #1c2128;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --accent3: "#f0883e";
+  --danger: #f85149;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.navbar {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+}
+.navbar-brand {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.nav-tabs {
+  border-bottom: 1px solid var(--border);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav-tabs .nav-link {
+  color: var(--text-secondary);
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-tabs .nav-link:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-secondary);
+}
+.nav-tabs .nav-link.active {
+  color: var(--accent);
+  background: transparent;
+  border-bottom: 2px solid var(--accent);
+}
+
+.tab-content { padding: 1.2rem; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.card-body { padding: 1rem; }
+.card h6 {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-sub {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+.chart-container {
+  width: 100%;
+  min-height: 400px;
+}
+.chart-container-sm {
+  width: 100%;
+  min-height: 300px;
+}
+.chart-container-lg {
+  width: 100%;
+  min-height: 500px;
+}
+.chart-container-xl {
+  width: 100%;
+  min-height: 600px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: var(--text-primary);
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+table.data-table {
+  width: 100%;
+  font-size: 0.82rem;
+  border-collapse: collapse;
+}
+table.data-table th, table.data-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+table.data-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+table.data-table td {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+}
+table.data-table tr:hover td {
+  background: rgba(88,166,255,0.05);
+}
+
+.badge-region {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+}
+
+.methods-text {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.methods-text strong { color: var(--text-primary); }
+.methods-text ul { padding-left: 1.2rem; }
+.methods-text li { margin-bottom: 0.3rem; }
+
+@media (max-width: 768px) {
+  .stat-value { font-size: 1.4rem; }
+  .chart-container { min-height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="navbar-brand">Cross-Cultural AI Values Alignment</span>
+  <span style="font-size:0.75rem;color:var(--text-secondary)">CEI Literature Vault &middot; 2,046 papers</span>
+</nav>
+
+<div class="container-fluid px-3">
+<ul class="nav nav-tabs mt-2" id="mainTabs">
+  <li class="nav-item"><a class="nav-link active" data-tab="overview" href="#">Overview</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="regional" href="#">Regional</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="weird" href="#">WEIRD</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="northsouth" href="#">N/S</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="eastwest" href="#">E/W</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="normative" href="#">Frameworks</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="religious" href="#">Religious</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="positionality" href="#">Positionality</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="temporal" href="#">Temporal</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="gap" href="#">Gap Analysis</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="landscape" href="#">Landscape</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="methods" href="#">Methods</a></li>
+</ul>
+
+<!-- ===== TAB 1: OVERVIEW ===== -->
+<div class="tab-pane active" id="tab-overview">
+  <div class="row g-3 mt-1">
+    <div class="col-6 col-md-3"><div class="card"><div class="card-body">
+      <h6>Total Papers</h6>
+      <div class="stat-value" id="ov-total"></div>
+    </div></div></div>
+    <div class="col-6 col-md-3"><div class="card"><div class="card-body">
+      <h6>Mean WEIRD Score</h6>
+      <div class="stat-value" id="ov-weird"></div>
+      <div class="stat-sub" id="ov-weird-sub"></div>
+    </div></div></div>
+    <div class="col-6 col-md-3"><div class="card"><div class="card-body">
+      <h6>Global South</h6>
+      <div class="stat-value" id="ov-south"></div>
+      <div class="stat-sub" id="ov-south-sub"></div>
+    </div></div></div>
+    <div class="col-6 col-md-3"><div class="card"><div class="card-body">
+      <h6>Non-Western Frameworks</h6>
+      <div class="stat-value" id="ov-nw"></div>
+      <div class="stat-sub">papers with score &ge; 50</div>
+    </div></div></div>
+  </div>
+  <div class="row g-3 mt-0">
+    <div class="col-md-7">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Author Region Distribution</div>
+        <div class="chart-container" id="chart-ov-region"></div>
+      </div></div>
+    </div>
+    <div class="col-md-5">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Top 15 Author Countries</div>
+        <div class="chart-container" id="chart-ov-country"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 2: REGIONAL CLUSTERS ===== -->
+<div class="tab-pane" id="tab-regional">
+  <div class="row g-3 mt-1">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Ethical Framework Profiles by Region (Radar)</div>
+        <div class="chart-container-lg" id="chart-reg-radar"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Detection Rates Heatmap (Regions &times; Frameworks)</div>
+        <div class="chart-container-lg" id="chart-reg-heatmap"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Papers per Region</div>
+        <div class="chart-container-sm" id="chart-reg-bar"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: WEIRD ANALYSIS ===== -->
+<div class="tab-pane" id="tab-weird">
+  <div class="row g-3 mt-1">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">WEIRD Score Distribution</div>
+        <div class="chart-container" id="chart-weird-hist"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">WEIRD Tier Distribution</div>
+        <div class="chart-container" id="chart-weird-tier"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">W/E/I/R/D Sub-Dimensions by Tier</div>
+        <div class="chart-container" id="chart-weird-subdim"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Framework Means by WEIRD Tier</div>
+        <div class="chart-container" id="chart-weird-fw"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: NORTH/SOUTH ===== -->
+<div class="tab-pane" id="tab-northsouth">
+  <div class="row g-3 mt-1">
+    <div class="col-md-4">
+      <div class="card"><div class="card-body">
+        <div class="section-title">N/S Distribution</div>
+        <div class="chart-container" id="chart-ns-pie"></div>
+      </div></div>
+    </div>
+    <div class="col-md-8">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Framework Profiles: Global North vs South</div>
+        <div class="chart-container" id="chart-ns-bar"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">North vs South Radar Comparison</div>
+        <div class="chart-container" id="chart-ns-radar"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 5: EAST/WEST ===== -->
+<div class="tab-pane" id="tab-eastwest">
+  <div class="row g-3 mt-1">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">East vs West Radar Comparison</div>
+        <div class="chart-container-lg" id="chart-ew-radar"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Framework Mean Scores</div>
+        <div class="chart-container-lg" id="chart-ew-bar"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 6: NORMATIVE FRAMEWORKS ===== -->
+<div class="tab-pane" id="tab-normative">
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Regions &times; Frameworks Heatmap (Mean Scores)</div>
+        <div class="chart-container-xl" id="chart-norm-heatmap"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Framework Detection Counts (Score &ge; 50)</div>
+        <div class="chart-container" id="chart-norm-detect"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 7: RELIGIOUS TRADITIONS ===== -->
+<div class="tab-pane" id="tab-religious">
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Regions &times; Religious Traditions Heatmap (Detection Rate %)</div>
+        <div class="chart-container-xl" id="chart-rv-heatmap"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Tradition Detection Counts (Score &ge; 50)</div>
+        <div class="chart-container" id="chart-rv-detect"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 8: POSITIONALITY ===== -->
+<div class="tab-pane" id="tab-positionality">
+  <div class="row g-3 mt-1">
+    <div class="col-md-5">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Author Region Distribution</div>
+        <div class="chart-container" id="chart-pos-region"></div>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+        <div class="section-title">N/S Split</div>
+        <div class="chart-container" id="chart-pos-ns"></div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Classification Method</div>
+        <div class="chart-container" id="chart-pos-method"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Top Cultural Tags</div>
+        <div class="chart-container" id="chart-pos-cultural"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 9: TEMPORAL TRENDS ===== -->
+<div class="tab-pane" id="tab-temporal">
+  <div class="row g-3 mt-1">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Papers per Year</div>
+        <div class="chart-container" id="chart-temp-count"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Mean WEIRD Score Over Time</div>
+        <div class="chart-container" id="chart-temp-weird"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Non-Western Framework % Over Time</div>
+        <div class="chart-container" id="chart-temp-nw"></div>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Regional Diversity Over Time</div>
+        <div class="chart-container" id="chart-temp-div"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Regional Composition Over Time (Stacked)</div>
+        <div class="chart-container-lg" id="chart-temp-stack"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 10: GAP ANALYSIS ===== -->
+<div class="tab-pane" id="tab-gap">
+  <div class="row g-3 mt-1">
+    <div class="col-md-4">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Concentration Index (HHI)</div>
+        <div class="stat-value" id="gap-hhi"></div>
+        <div class="stat-sub">Lower = more balanced. Perfect balance (10 equal regions) = 1000</div>
+      </div></div>
+    </div>
+    <div class="col-md-8">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Papers by Region</div>
+        <div class="chart-container-sm" id="chart-gap-region"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Underrepresented Regions (&lt; 50 papers)</div>
+        <table class="data-table" id="gap-underrep"></table>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Low-Detection Frameworks (&lt; 20 papers &ge; 50)</div>
+        <table class="data-table" id="gap-lowfw"></table>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Zero-Detection Cells (Region &times; Framework)</div>
+        <table class="data-table" id="gap-zero"></table>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 11: LITERATURE LANDSCAPE ===== -->
+<div class="tab-pane" id="tab-landscape">
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">WEIRD Score vs Non-Western Framework Score (Colored by Region)</div>
+        <div class="chart-container-xl" id="chart-land-scatter"></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Non-Western Framework Score Summaries</div>
+        <div class="chart-container" id="chart-land-fw"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 12: METHODS ===== -->
+<div class="tab-pane" id="tab-methods">
+  <div class="row g-3 mt-1">
+    <div class="col-md-8">
+      <div class="card"><div class="card-body methods-text">
+        <div class="section-title">Methodology</div>
+        <p>This dashboard presents a cross-cultural analysis of <strong id="meth-total"></strong> academic papers on AI ethics from the CEI Literature Vault. The analysis examines how cultural context shapes AI values discourse across <strong id="meth-dims"></strong> dimensions.</p>
+
+        <p><strong>Author Geography Classification:</strong> Each paper's first author was classified into one of 10 world regions based on institutional affiliation, extracted from paper metadata. Classification methods included:</p>
+        <ul id="meth-method-list"></ul>
+
+        <p><strong>WEIRD Scoring:</strong> Each paper received a composite WEIRD score (0-100) based on five sub-dimensions: <strong>W</strong>estern, <strong>E</strong>ducated, <strong>I</strong>ndustrialized, <strong>R</strong>ich, and <strong>D</strong>emocratic. Scores reflect the cultural context of the research institution.</p>
+
+        <p><strong>Framework Detection:</strong> Papers were scored on 34 value dimensions using keyword-based scoring (0-100 scale). A score &ge; 50 indicates substantive engagement with a framework. Frameworks include:</p>
+        <ul>
+          <li><strong>Western Normative (5):</strong> <span id="meth-western"></span></li>
+          <li><strong>Non-Western (7):</strong> <span id="meth-nw"></span></li>
+          <li><strong>Religious Traditions (14):</strong> <span id="meth-rv"></span></li>
+          <li><strong>Moral Psychology (8):</strong> <span id="meth-mp"></span></li>
+        </ul>
+
+        <p><strong>Limitations:</strong></p>
+        <ul>
+          <li>Author affiliation is a proxy for cultural context; many researchers work across cultures</li>
+          <li>Keyword-based scoring may miss nuanced philosophical engagement</li>
+          <li>The corpus has a strong Global North / WEIRD bias reflecting publication patterns</li>
+          <li>Temporal trends are influenced by the vault's acquisition strategy</li>
+          <li>N/S and E/W classifications are simplifications of complex geopolitical realities</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Dimension Summary</div>
+        <table class="data-table" id="meth-dims-table"></table>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- container-fluid -->
+
+<script>
+// ==========================================================================
+// TAB SWITCHING
+// ==========================================================================
+const tabs = document.querySelectorAll('#mainTabs .nav-link');
+const panes = document.querySelectorAll('.tab-pane');
+const chartInstances = {};
+let initializedTabs = new Set();
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', e => {
+    e.preventDefault();
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = tab.dataset.tab;
+    panes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + id));
+    initTab(id);
+    // Resize all charts in active tab
+    Object.values(chartInstances).forEach(c => c.resize());
+  });
+});
+
+function getChart(id) {
+  if (!chartInstances[id]) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    chartInstances[id] = echarts.init(el);
+  }
+  return chartInstances[id];
+}
+
+window.addEventListener('resize', () => {
+  Object.values(chartInstances).forEach(c => c.resize());
+});
+
+// ==========================================================================
+// SHARED OPTIONS
+// ==========================================================================
+const TOOLTIP = { backgroundColor: '#1c2128', borderColor: '#30363d', textStyle: { color: '#e6edf3', fontSize: 12, fontFamily: 'Inter' } };
+const AXIS_LABEL = { color: '#8b949e', fontSize: 11, fontFamily: 'Inter' };
+const AXIS_LINE = { lineStyle: { color: '#30363d' } };
+const SPLIT_LINE = { lineStyle: { color: '#21262d' } };
+
+// ==========================================================================
+// TAB INITIALIZATION
+// ==========================================================================
+function initTab(id) {
+  if (initializedTabs.has(id)) {
+    Object.values(chartInstances).forEach(c => c.resize());
+    return;
+  }
+  initializedTabs.add(id);
+
+  switch(id) {
+    case 'overview': initOverview(); break;
+    case 'regional': initRegional(); break;
+    case 'weird': initWeird(); break;
+    case 'northsouth': initNorthSouth(); break;
+    case 'eastwest': initEastWest(); break;
+    case 'normative': initNormative(); break;
+    case 'religious': initReligious(); break;
+    case 'positionality': initPositionality(); break;
+    case 'temporal': initTemporal(); break;
+    case 'gap': initGap(); break;
+    case 'landscape': initLandscape(); break;
+    case 'methods': initMethods(); break;
+  }
+}
+
+// ==========================================================================
+// TAB 1: OVERVIEW
+// ==========================================================================
+function initOverview() {
+  const o = overview;
+  document.getElementById('ov-total').textContent = o.total_papers.toLocaleString();
+  document.getElementById('ov-weird').textContent = o.mean_weird.toFixed(1);
+  document.getElementById('ov-weird-sub').textContent = o.high_weird_pct + '% High-WEIRD';
+  document.getElementById('ov-south').textContent = o.global_south_pct + '%';
+  document.getElementById('ov-south-sub').textContent = o.global_south_n + ' papers';
+  document.getElementById('ov-nw').textContent = o.nw_framework_papers;
+
+  // Region pie/donut
+  const regionData = Object.entries(o.region_counts).map(([k,v]) => ({
+    name: k, value: v, itemStyle: { color: REGION_COLORS[k] || '#666' }
+  }));
+  getChart('chart-ov-region').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { show: false },
+    series: [{
+      type: 'pie', radius: ['40%', '75%'], center: ['50%', '50%'],
+      label: { color: '#8b949e', fontSize: 11, formatter: '{b}\n{c}' },
+      data: regionData, emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' } }
+    }]
+  });
+
+  // Top countries bar
+  const countries = Object.entries(o.top_countries);
+  getChart('chart-ov-country').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 50, right: 20, top: 10, bottom: 30 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: countries.map(c => c[0]).reverse(), axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: countries.map(c => c[1]).reverse(), itemStyle: { color: '#58a6ff', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 18 }]
+  });
+}
+
+// ==========================================================================
+// TAB 2: REGIONAL CLUSTERS
+// ==========================================================================
+function initRegional() {
+  const r = regional;
+  // Radar
+  const radarIndicator = r.radar_dims.map(d => ({ name: d, max: 30 }));
+  const radarSeries = Object.entries(r.radar_series).map(([region, vals]) => ({
+    name: region, value: vals, lineStyle: { width: 2 },
+    itemStyle: { color: REGION_COLORS[region] },
+    areaStyle: { opacity: 0.05 }
+  }));
+
+  getChart('chart-reg-radar').setOption({
+    tooltip: { ...TOOLTIP },
+    legend: {
+      data: Object.keys(r.radar_series), bottom: 0, textStyle: { color: '#8b949e', fontSize: 10 },
+      itemWidth: 12, itemHeight: 8
+    },
+    radar: {
+      indicator: radarIndicator, shape: 'polygon',
+      axisName: { color: '#8b949e', fontSize: 9 },
+      splitLine: { lineStyle: { color: '#21262d' } },
+      splitArea: { areaStyle: { color: ['transparent'] } },
+      axisLine: { lineStyle: { color: '#30363d' } }
+    },
+    series: [{ type: 'radar', data: radarSeries }]
+  });
+
+  // Heatmap
+  getChart('chart-reg-heatmap').setOption({
+    tooltip: { ...TOOLTIP, formatter: p => p.data ? r.heatmap_y[p.data[1]] + '<br>' + r.heatmap_x[p.data[0]] + ': ' + p.data[2] + '%' : '' },
+    grid: { left: 160, right: 60, top: 10, bottom: 80 },
+    xAxis: { type: 'category', data: r.heatmap_x, axisLabel: { ...AXIS_LABEL, rotate: 45, fontSize: 9 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: r.heatmap_y, axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    visualMap: { min: 0, max: 30, calculable: true, orient: 'vertical', right: 0, top: 'center',
+      inRange: { color: ['#161b22', '#0d4a6b', '#0e7490', '#22d3ee', '#fef08a'] },
+      textStyle: { color: '#8b949e' }
+    },
+    series: [{ type: 'heatmap', data: r.heatmap_data, label: { show: true, fontSize: 9, color: '#e6edf3', formatter: p => p.data[2] > 0 ? p.data[2].toFixed(0) : '' } }]
+  });
+
+  // Bar
+  const regions = Object.keys(r.region_n);
+  getChart('chart-reg-bar').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 160, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: regions.reverse(), axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: regions.map(r2 => ({ value: r.region_n[r2], itemStyle: { color: REGION_COLORS[r2] } })), barMaxWidth: 20 }]
+  });
+}
+
+// ==========================================================================
+// TAB 3: WEIRD ANALYSIS
+// ==========================================================================
+function initWeird() {
+  const w = weird;
+
+  // Histogram
+  getChart('chart-weird-hist').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 50, right: 20, top: 20, bottom: 40 },
+    xAxis: { type: 'category', data: w.histogram_labels, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    series: [{
+      type: 'bar', data: w.histogram_buckets,
+      itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+        { offset: 0, color: '#882255' }, { offset: 0.5, color: '#E69F00' }, { offset: 1, color: '#56B4E9' }
+      ]) },
+      barMaxWidth: 40
+    }]
+  });
+
+  // Tier pie
+  const tierData = w.tier_order.map(t => ({
+    name: t, value: w.tier_distribution[t]
+  }));
+  const tierColors = ['#882255', '#D55E00', '#E69F00', '#56B4E9'];
+  getChart('chart-weird-tier').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    color: tierColors,
+    series: [{
+      type: 'pie', radius: ['35%', '70%'], data: tierData,
+      label: { color: '#8b949e', fontSize: 10, formatter: '{b}\n{c}' }
+    }]
+  });
+
+  // Sub-dimensions grouped bar
+  const tierSeries = w.tier_order.map((t, i) => ({
+    name: t, type: 'bar', data: w.tier_subdim[t],
+    itemStyle: { color: tierColors[i] }, barMaxWidth: 16
+  }));
+  getChart('chart-weird-subdim').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    legend: { data: w.tier_order, bottom: 0, textStyle: { color: '#8b949e', fontSize: 10 } },
+    grid: { left: 50, right: 20, top: 20, bottom: 60 },
+    xAxis: { type: 'category', data: w.sub_dim_labels, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Mean Score', nameTextStyle: AXIS_LABEL },
+    series: tierSeries
+  });
+
+  // Framework means by tier
+  const fwLabels = ['Virtue', 'Deontol.', 'Utilitar.', 'Care', 'Contract.', 'Confucian', 'Ubuntu', 'Islamic', 'Buddhist', 'Dharmic', 'Indigenous', 'Buen Vivir'];
+  const fwSeries = w.tier_order.filter(t => w.tier_fw_means[t]).map((t, i) => ({
+    name: t, type: 'bar',
+    data: [...(w.tier_fw_means[t].western || []), ...(w.tier_fw_means[t].non_western || [])],
+    itemStyle: { color: tierColors[i] }, barMaxWidth: 12
+  }));
+  getChart('chart-weird-fw').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    legend: { data: w.tier_order, bottom: 0, textStyle: { color: '#8b949e', fontSize: 9 } },
+    grid: { left: 50, right: 10, top: 20, bottom: 60 },
+    xAxis: { type: 'category', data: fwLabels, axisLabel: { ...AXIS_LABEL, rotate: 35, fontSize: 9 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Mean Score', nameTextStyle: AXIS_LABEL },
+    series: fwSeries
+  });
+}
+
+// ==========================================================================
+// TAB 4: NORTH/SOUTH
+// ==========================================================================
+function initNorthSouth() {
+  const ns = north_south;
+
+  // Pie
+  const nsColors = { 'Global North': '#56B4E9', 'Global South': '#D55E00', 'Ambiguous': '#999999', 'Unknown': '#666666' };
+  const nsPie = Object.entries(ns.ns_distribution).map(([k,v]) => ({
+    name: k, value: v, itemStyle: { color: nsColors[k] || '#666' }
+  }));
+  getChart('chart-ns-pie').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    series: [{ type: 'pie', radius: ['35%', '70%'], data: nsPie, label: { color: '#8b949e', fontSize: 10, formatter: '{b}\n{c}' } }]
+  });
+
+  // Grouped bar
+  const barSeries = ns.groups.filter(g => ns.group_means[g]).map(g => ({
+    name: g + ' (n=' + ns.group_n[g] + ')', type: 'bar',
+    data: ns.group_means[g],
+    itemStyle: { color: nsColors[g] }, barMaxWidth: 14
+  }));
+  getChart('chart-ns-bar').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    legend: { data: barSeries.map(s => s.name), bottom: 0, textStyle: { color: '#8b949e', fontSize: 10 } },
+    grid: { left: 50, right: 10, top: 20, bottom: 60 },
+    xAxis: { type: 'category', data: ns.fw_labels, axisLabel: { ...AXIS_LABEL, rotate: 40, fontSize: 9 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Mean Score', nameTextStyle: AXIS_LABEL },
+    series: barSeries
+  });
+
+  // Radar
+  const radarInd = ns.fw_labels.map(l => ({ name: l, max: 10 }));
+  const radarData = ns.groups.filter(g => ns.group_means[g]).map(g => ({
+    name: g, value: ns.group_means[g],
+    lineStyle: { width: 2 }, itemStyle: { color: nsColors[g] }, areaStyle: { opacity: 0.1 }
+  }));
+  getChart('chart-ns-radar').setOption({
+    tooltip: { ...TOOLTIP },
+    legend: { data: ns.groups, bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+    radar: {
+      indicator: radarInd, shape: 'polygon',
+      axisName: { color: '#8b949e', fontSize: 9 },
+      splitLine: { lineStyle: { color: '#21262d' } },
+      splitArea: { areaStyle: { color: ['transparent'] } },
+      axisLine: { lineStyle: { color: '#30363d' } }
+    },
+    series: [{ type: 'radar', data: radarData }]
+  });
+}
+
+// ==========================================================================
+// TAB 5: EAST/WEST
+// ==========================================================================
+function initEastWest() {
+  const ew = east_west;
+  const ewColors = { 'East': '#009E73', 'West': '#56B4E9' };
+
+  // Radar
+  const radarInd = ew.fw_labels.map(l => ({ name: l, max: 10 }));
+  const radarData = ew.groups.filter(g => ew.group_means[g]).map(g => ({
+    name: g + ' (n=' + ew.group_n[g] + ')', value: ew.group_means[g],
+    lineStyle: { width: 2 }, itemStyle: { color: ewColors[g] }, areaStyle: { opacity: 0.1 }
+  }));
+  getChart('chart-ew-radar').setOption({
+    tooltip: { ...TOOLTIP },
+    legend: { data: radarData.map(d => d.name), bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+    radar: {
+      indicator: radarInd, shape: 'polygon',
+      axisName: { color: '#8b949e', fontSize: 9 },
+      splitLine: { lineStyle: { color: '#21262d' } },
+      splitArea: { areaStyle: { color: ['transparent'] } },
+      axisLine: { lineStyle: { color: '#30363d' } }
+    },
+    series: [{ type: 'radar', data: radarData }]
+  });
+
+  // Bar
+  const barSeries = ew.groups.filter(g => ew.group_means[g]).map(g => ({
+    name: g + ' (n=' + ew.group_n[g] + ')', type: 'bar',
+    data: ew.group_means[g],
+    itemStyle: { color: ewColors[g] }, barMaxWidth: 18
+  }));
+  getChart('chart-ew-bar').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    legend: { data: barSeries.map(s => s.name), bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+    grid: { left: 50, right: 10, top: 20, bottom: 60 },
+    xAxis: { type: 'category', data: ew.fw_labels, axisLabel: { ...AXIS_LABEL, rotate: 40, fontSize: 9 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Mean Score', nameTextStyle: AXIS_LABEL },
+    series: barSeries
+  });
+}
+
+// ==========================================================================
+// TAB 6: NORMATIVE FRAMEWORKS
+// ==========================================================================
+function initNormative() {
+  const n = normative;
+
+  // Heatmap
+  getChart('chart-norm-heatmap').setOption({
+    tooltip: { ...TOOLTIP, formatter: p => p.data ? n.regions[p.data[1]] + '<br>' + n.fw_labels[p.data[0]] + ': ' + p.data[2] : '' },
+    grid: { left: 180, right: 70, top: 10, bottom: 80 },
+    xAxis: { type: 'category', data: n.fw_labels, axisLabel: { ...AXIS_LABEL, rotate: 45, fontSize: 10 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: n.regions, axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    visualMap: { min: 0, max: 25, calculable: true, orient: 'vertical', right: 0, top: 'center',
+      inRange: { color: ['#161b22', '#1e3a5f', '#0e7490', '#22d3ee', '#fef08a', '#f97316'] },
+      textStyle: { color: '#8b949e' }
+    },
+    series: [{
+      type: 'heatmap', data: n.heatmap_data,
+      label: { show: true, fontSize: 9, color: '#e6edf3', formatter: p => p.data[2] > 0 ? p.data[2].toFixed(1) : '' }
+    }]
+  });
+
+  // Detection bar
+  const dc = n.detection_counts;
+  const sortedDc = Object.entries(dc).sort((a,b) => b[1] - a[1]);
+  getChart('chart-norm-detect').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 140, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: sortedDc.map(d => d[0]).reverse(), axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: sortedDc.map(d => d[1]).reverse(), itemStyle: { color: '#58a6ff', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 20 }]
+  });
+}
+
+// ==========================================================================
+// TAB 7: RELIGIOUS TRADITIONS
+// ==========================================================================
+function initReligious() {
+  const rv = religious;
+
+  getChart('chart-rv-heatmap').setOption({
+    tooltip: { ...TOOLTIP, formatter: p => p.data ? rv.regions[p.data[1]] + '<br>' + rv.rv_labels[p.data[0]] + ': ' + p.data[2] + '%' : '' },
+    grid: { left: 180, right: 70, top: 10, bottom: 80 },
+    xAxis: { type: 'category', data: rv.rv_labels, axisLabel: { ...AXIS_LABEL, rotate: 45, fontSize: 10 }, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: rv.regions, axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    visualMap: { min: 0, max: 30, calculable: true, orient: 'vertical', right: 0, top: 'center',
+      inRange: { color: ['#161b22', '#3b0764', '#7c3aed', '#c084fc', '#fef08a', '#f97316'] },
+      textStyle: { color: '#8b949e' }
+    },
+    series: [{
+      type: 'heatmap', data: rv.heatmap_data,
+      label: { show: true, fontSize: 9, color: '#e6edf3', formatter: p => p.data[2] > 0 ? p.data[2].toFixed(0) : '' }
+    }]
+  });
+
+  const dc = rv.detection_counts;
+  const sorted = Object.entries(dc).sort((a,b) => b[1] - a[1]);
+  getChart('chart-rv-detect').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 120, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: sorted.map(d => d[0]).reverse(), axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: sorted.map(d => d[1]).reverse(), itemStyle: { color: '#c084fc', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 20 }]
+  });
+}
+
+// ==========================================================================
+// TAB 8: POSITIONALITY
+// ==========================================================================
+function initPositionality() {
+  const pos = positionality;
+
+  // Region bar
+  const regionEntries = Object.entries(pos.region_distribution).sort((a,b) => b[1] - a[1]);
+  getChart('chart-pos-region').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 170, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: regionEntries.map(r => r[0]).reverse(), axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: regionEntries.map(r => ({ value: r[1], itemStyle: { color: REGION_COLORS[r[0]] || '#666' } })).reverse(), barMaxWidth: 18 }]
+  });
+
+  // N/S pie
+  const nsColors = { 'Global North': '#56B4E9', 'Global South': '#D55E00', 'Ambiguous': '#999999', 'Unknown': '#666666' };
+  getChart('chart-pos-ns').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    series: [{
+      type: 'pie', radius: ['30%', '70%'],
+      data: Object.entries(pos.ns_distribution).map(([k,v]) => ({ name: k, value: v, itemStyle: { color: nsColors[k] || '#666' } })),
+      label: { color: '#8b949e', fontSize: 10, formatter: '{b}\n{d}%' }
+    }]
+  });
+
+  // Method pie
+  const methodColors = ['#58a6ff', '#3fb950', '#f0883e', '#f85149', '#999999'];
+  getChart('chart-pos-method').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    color: methodColors,
+    series: [{
+      type: 'pie', radius: ['30%', '70%'],
+      data: Object.entries(pos.method_distribution).map(([k,v]) => ({ name: k, value: v })),
+      label: { color: '#8b949e', fontSize: 10, formatter: '{b}\n{c}' }
+    }]
+  });
+
+  // Cultural tags bar
+  const ct = Object.entries(pos.cultural_top).sort((a,b) => b[1] - a[1]);
+  getChart('chart-pos-cultural').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 180, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: ct.map(c => c[0]).reverse(), axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: ct.map(c => c[1]).reverse(), itemStyle: { color: '#E69F00', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 18 }]
+  });
+}
+
+// ==========================================================================
+// TAB 9: TEMPORAL TRENDS
+// ==========================================================================
+function initTemporal() {
+  const t = temporal;
+  const lineOpts = { smooth: true, symbolSize: 6, lineStyle: { width: 2 } };
+
+  // Papers per year
+  getChart('chart-temp-count').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 60, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', data: t.years, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    series: [{ ...lineOpts, type: 'line', data: t.papers_per_year, itemStyle: { color: '#58a6ff' }, areaStyle: { opacity: 0.15, color: '#58a6ff' } }]
+  });
+
+  // Mean WEIRD
+  getChart('chart-temp-weird').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 60, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', data: t.years, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', min: 55, max: 80, axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Mean WEIRD', nameTextStyle: AXIS_LABEL },
+    series: [{
+      ...lineOpts, type: 'line', data: t.mean_weird, itemStyle: { color: '#f0883e' },
+      markLine: { data: [{ type: 'average', label: { color: '#8b949e', fontSize: 10 } }], lineStyle: { color: '#f0883e', type: 'dashed' } }
+    }]
+  });
+
+  // NW %
+  getChart('chart-temp-nw').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 60, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', data: t.years, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'NW Framework %', nameTextStyle: AXIS_LABEL },
+    series: [{ ...lineOpts, type: 'line', data: t.nw_pct, itemStyle: { color: '#3fb950' }, areaStyle: { opacity: 0.15, color: '#3fb950' } }]
+  });
+
+  // Region diversity
+  getChart('chart-temp-div').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 60, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', data: t.years, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', min: 0, max: 12, axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Regions Represented', nameTextStyle: AXIS_LABEL },
+    series: [{ ...lineOpts, type: 'line', data: t.region_diversity, itemStyle: { color: '#c084fc' }, areaStyle: { opacity: 0.15, color: '#c084fc' } }]
+  });
+
+  // Stacked area
+  const stackSeries = REGIONS_ORDERED.map(region => ({
+    name: region, type: 'line', stack: 'total', areaStyle: { opacity: 0.7 },
+    emphasis: { focus: 'series' }, lineStyle: { width: 0 },
+    data: t.region_by_year[region] || t.years.map(() => 0),
+    itemStyle: { color: REGION_COLORS[region] }
+  }));
+  getChart('chart-temp-stack').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    legend: { data: REGIONS_ORDERED, bottom: 0, textStyle: { color: '#8b949e', fontSize: 9 }, itemWidth: 12, itemHeight: 8 },
+    grid: { left: 60, right: 20, top: 20, bottom: 80 },
+    xAxis: { type: 'category', data: t.years, axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    series: stackSeries
+  });
+}
+
+// ==========================================================================
+// TAB 10: GAP ANALYSIS
+// ==========================================================================
+function initGap() {
+  const g = gap;
+  document.getElementById('gap-hhi').textContent = g.hhi.toFixed(1);
+
+  // Region bar with red/green coloring by size
+  const regionEntries = Object.entries(g.region_n).sort((a,b) => b[1] - a[1]);
+  getChart('chart-gap-region').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis' },
+    grid: { left: 170, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'category', data: regionEntries.map(r => r[0]).reverse(), axisLabel: { ...AXIS_LABEL, fontSize: 10 }, axisLine: AXIS_LINE },
+    series: [{
+      type: 'bar', barMaxWidth: 18,
+      data: regionEntries.map(r => ({
+        value: r[1],
+        itemStyle: { color: r[1] < 50 ? '#f85149' : r[1] < 100 ? '#f0883e' : '#3fb950' }
+      })).reverse()
+    }]
+  });
+
+  // Underrepresented regions table
+  let html = '<thead><tr><th>Region</th><th>Papers</th></tr></thead><tbody>';
+  g.underrepresented_regions.forEach(r => {
+    html += '<tr><td style="color:var(--text-primary)">' + r.region + '</td><td style="color:#f85149">' + r.n + '</td></tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('gap-underrep').innerHTML = html;
+
+  // Low detection frameworks
+  html = '<thead><tr><th>Framework</th><th>Count</th></tr></thead><tbody>';
+  g.low_detection_frameworks.forEach(f => {
+    html += '<tr><td style="color:var(--text-primary)">' + f.framework + '</td><td style="color:#f0883e">' + f.count + '</td></tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('gap-lowfw').innerHTML = html;
+
+  // Zero cells
+  html = '<thead><tr><th>Region</th><th>Framework</th></tr></thead><tbody>';
+  g.zero_cells.forEach(c => {
+    html += '<tr><td style="color:var(--text-primary)">' + c.region + '</td><td>' + c.framework + '</td></tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('gap-zero').innerHTML = html;
+}
+
+// ==========================================================================
+// TAB 11: LITERATURE LANDSCAPE
+// ==========================================================================
+function initLandscape() {
+  const l = landscape;
+
+  // Build series by region
+  const regionPoints = {};
+  l.scatter_points.forEach(p => {
+    const region = p[2];
+    if (!regionPoints[region]) regionPoints[region] = [];
+    regionPoints[region].push(p);
+  });
+
+  const scatterSeries = REGIONS_ORDERED.map(region => ({
+    name: region, type: 'scatter',
+    data: (regionPoints[region] || []).map(p => [p[0], p[1]]),
+    symbolSize: 5,
+    itemStyle: { color: REGION_COLORS[region], opacity: 0.6 }
+  }));
+
+  // Add Unknown if present
+  if (regionPoints['Unknown']) {
+    scatterSeries.push({
+      name: 'Unknown', type: 'scatter',
+      data: regionPoints['Unknown'].map(p => [p[0], p[1]]),
+      symbolSize: 4, itemStyle: { color: '#666', opacity: 0.4 }
+    });
+  }
+
+  getChart('chart-land-scatter').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'item', formatter: p => p.seriesName + '<br>WEIRD: ' + p.data[0] + ', NW: ' + p.data[1] },
+    legend: { data: REGIONS_ORDERED, bottom: 0, textStyle: { color: '#8b949e', fontSize: 9 }, itemWidth: 10, itemHeight: 8 },
+    grid: { left: 60, right: 20, top: 20, bottom: 70 },
+    xAxis: { type: 'value', name: 'WEIRD Score', nameTextStyle: AXIS_LABEL, axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    yAxis: { type: 'value', name: 'Total NW Framework Score', nameTextStyle: AXIS_LABEL, axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE },
+    series: scatterSeries
+  });
+
+  // Framework summaries bar
+  const fw = l.fw_distributions;
+  const fwEntries = Object.entries(fw).sort((a,b) => b[1].count - a[1].count);
+  getChart('chart-land-fw').setOption({
+    tooltip: { ...TOOLTIP, trigger: 'axis', formatter: params => {
+      const p = params[0];
+      const d = fw[p.name];
+      return d ? p.name + '<br>Count: ' + d.count + '<br>Mean: ' + d.mean + '<br>Median: ' + d.median + '<br>Max: ' + d.max : '';
+    }},
+    grid: { left: 140, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Papers with Score > 0', nameTextStyle: AXIS_LABEL },
+    yAxis: { type: 'category', data: fwEntries.map(f => f[0]).reverse(), axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
+    series: [{ type: 'bar', data: fwEntries.map(f => f[1].count).reverse(), itemStyle: { color: '#3fb950', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 20 }]
+  });
+}
+
+// ==========================================================================
+// TAB 12: METHODS
+// ==========================================================================
+function initMethods() {
+  const m = methods;
+  document.getElementById('meth-total').textContent = m.total_papers.toLocaleString();
+  document.getElementById('meth-dims').textContent = m.dimensions;
+
+  // Method list
+  let html = '';
+  Object.entries(m.method_distribution).forEach(([k,v]) => {
+    html += '<li><strong>' + k + ':</strong> ' + v + ' papers</li>';
+  });
+  document.getElementById('meth-method-list').innerHTML = html;
+
+  document.getElementById('meth-western').textContent = m.western_frameworks.join(', ');
+  document.getElementById('meth-nw').textContent = m.nw_frameworks.join(', ');
+  document.getElementById('meth-rv').textContent = m.rv_traditions.join(', ');
+  document.getElementById('meth-mp').textContent = m.mp_frameworks.join(', ');
+
+  // Dimension table
+  html = '<thead><tr><th>Category</th><th>Count</th></tr></thead><tbody>';
+  html += '<tr><td>Western Normative</td><td>' + m.western_frameworks.length + '</td></tr>';
+  html += '<tr><td>Non-Western</td><td>' + m.nw_frameworks.length + '</td></tr>';
+  html += '<tr><td>Religious Traditions</td><td>' + m.rv_traditions.length + '</td></tr>';
+  html += '<tr><td>Moral Psychology</td><td>' + m.mp_frameworks.length + '</td></tr>';
+  html += '<tr><td>WEIRD Sub-dimensions</td><td>' + m.weird_sub_dims.length + '</td></tr>';
+  html += '<tr style="font-weight:600"><td>Total</td><td>' + m.dimensions + '</td></tr>';
+  html += '</tbody>';
+  document.getElementById('meth-dims-table').innerHTML = html;
+}
+
+// ==========================================================================
+// INIT
+// ==========================================================================
+initTab('overview');
+</script>
+</body>
+</html>
