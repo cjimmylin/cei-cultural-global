@@ -1783,7 +1783,7 @@ const MULTIMODEL_RLHF = {
 };
 const MULTIMODEL_LENGTHS = {
   "opus": 390.0,
-  "sonnet": 539.0,
+  "sonnet": 519.0,
   "haiku": 424.0
 };
 const MULTIMODEL_RATIOS = {
