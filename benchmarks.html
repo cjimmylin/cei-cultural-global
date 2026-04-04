@@ -150,6 +150,10 @@ table.dt tbody tr:hover {
     <button class="nav-link" id="trials-tab" data-bs-toggle="pill"
       data-bs-target="#trialsPane" type="button" role="tab">Trials</button>
   </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="compare-tab" data-bs-toggle="pill"
+      data-bs-target="#comparePane" type="button" role="tab">Model Comparison</button>
+  </li>
 </ul>
 
 <div class="tab-content" id="mainTabContent">
@@ -372,10 +376,98 @@ table.dt tbody tr:hover {
 
 </div><!-- /trialsPane -->
 
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODEL COMPARISON TAB                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="tab-pane fade" id="comparePane" role="tabpanel">
+
+<!-- KPI row -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Models Compared</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub">Opus &middot; Sonnet &middot; Haiku</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Total Responses</div>
+      <div class="stat-value">1,140</div>
+      <div class="stat-sub">380 items &times; 3 models</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Opus-Sonnet r</div>
+      <div class="stat-value" id="kpiR">--</div>
+      <div class="stat-sub">Pearson correlation</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">MFQ Ratio Range</div>
+      <div class="stat-value" id="kpiRatio">--</div>
+      <div class="stat-sub">Indiv/Binding across models</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Charts row 1: MFQ Comparison + Cultural Alignment -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">MFQ Foundation Profile: 3-Model Comparison</div>
+      <div id="chartMFQCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Cultural Alignment Radar: 3-Model Overlay</div>
+      <div id="chartAlignCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Charts row 2: Agreement Heatmap + Engagement Comparison -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Pairwise Agreement by Trial (Pearson r)</div>
+      <div id="chartAgreement" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Tradition Engagement Depth by Model</div>
+      <div id="chartEngageCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Charts row 3: RLHF Comparison + Divergence Table -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">RLHF Conflict Frequency by Model</div>
+      <div id="chartRLHFCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Top Divergence Items (Highest Cross-Model Variance)</div>
+      <div class="scroll-box" id="divTableBox"></div>
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /comparePane -->
+
 </div><!-- /tab-content -->
 </div><!-- /container -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="benchmark-data.js"></script>
 <script>
 (function() {
   "use strict";
@@ -794,6 +886,287 @@ table.dt tbody tr:hover {
     });
     window.addEventListener("resize", function() { ch.resize(); });
   })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // MODEL COMPARISON CHARTS
+  // ═══════════════════════════════════════════════════════════════════════
+  if (typeof MULTIMODEL_AVAILABLE !== "undefined" && MULTIMODEL_AVAILABLE) {
+
+    var MC = typeof MODEL_COLORS !== "undefined" ? MODEL_COLORS : {};
+    var opusC = MC.opus || "#0072B2";
+    var sonnetC = MC.sonnet || "#009E73";
+    var haikuC = MC.haiku || "#E69F00";
+
+    // KPI: Pearson r
+    if (typeof MULTIMODEL_AGREEMENT !== "undefined") {
+      var osR = (MULTIMODEL_AGREEMENT.opus_vs_sonnet || {}).overall || {};
+      var el = document.getElementById("kpiR");
+      if (el && osR.pearson_r != null) el.textContent = osR.pearson_r.toFixed(3);
+    }
+    // KPI: MFQ ratio range
+    if (typeof MULTIMODEL_RATIOS !== "undefined") {
+      var rats = Object.values(MULTIMODEL_RATIOS).filter(function(v) { return v != null; });
+      var el2 = document.getElementById("kpiRatio");
+      if (el2 && rats.length > 0) {
+        el2.textContent = Math.min.apply(null, rats).toFixed(1) + "-" + Math.max.apply(null, rats).toFixed(1);
+      }
+    }
+
+    // ── 11. MFQ 3-Model Comparison ──────────────────────────────────
+    (function() {
+      var ch = initChart("chartMFQCompare");
+      if (!ch || typeof MULTIMODEL_MFQ === "undefined") return;
+      var foundations = ["Care_Harm", "Fairness_Cheating", "Loyalty_Betrayal", "Authority_Subversion", "Sanctity_Degradation"];
+      var fLabels = ["Care", "Fairness", "Loyalty", "Authority", "Sanctity"];
+      var fs = MULTIMODEL_MFQ.foundation_scores || {};
+      function getVals(model) {
+        var m = fs[model] || {};
+        return foundations.map(function(f) { return m[f] || 0; });
+      }
+      var usLib = [3.8, 3.8, 2.3, 2.1, 1.3];
+      var usCon = [3.1, 3.0, 3.2, 3.3, 2.9];
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {
+          data: ["Opus", "Sonnet", "Haiku", "US Liberal", "US Conservative"],
+          bottom: 5, textStyle: {color: txtS, fontSize: 10},
+          itemWidth: 12, itemHeight: 12
+        },
+        grid: {left: 10, right: 20, top: 20, bottom: 55, containLabel: true},
+        xAxis: {
+          type: "category", data: fLabels,
+          axisLabel: {color: txtS, fontSize: 11},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        yAxis: {
+          type: "value", max: 5.5,
+          axisLabel: {color: txtS},
+          splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+        },
+        series: [
+          {name: "Opus", type: "bar", data: getVals("opus"), itemStyle: {color: opusC, borderRadius: [3,3,0,0]}, barGap: "10%"},
+          {name: "Sonnet", type: "bar", data: getVals("sonnet"), itemStyle: {color: sonnetC, borderRadius: [3,3,0,0]}},
+          {name: "Haiku", type: "bar", data: getVals("haiku"), itemStyle: {color: haikuC, borderRadius: [3,3,0,0]}},
+          {name: "US Liberal", type: "line", data: usLib, lineStyle: {color: "#8b949e", type: "dashed"}, symbol: "diamond", symbolSize: 6, itemStyle: {color: "#8b949e"}},
+          {name: "US Conservative", type: "line", data: usCon, lineStyle: {color: "#484f58", type: "dashed"}, symbol: "triangle", symbolSize: 6, itemStyle: {color: "#484f58"}}
+        ]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 12. Cultural Alignment Radar 3-Model ─────────────────────────
+    (function() {
+      var ch = initChart("chartAlignCompare");
+      if (!ch || typeof MULTIMODEL_ALIGNMENT === "undefined") return;
+      var countries = ["US", "Germany", "Japan", "Brazil", "India", "China", "Nigeria", "Saudi_Arabia"];
+      var cLabels = {US: "United States", Germany: "Germany", Japan: "Japan", Brazil: "Brazil", India: "India", China: "China", Nigeria: "Nigeria", Saudi_Arabia: "Saudi Arabia"};
+      var maxD = 0;
+      countries.forEach(function(c) {
+        var cd = MULTIMODEL_ALIGNMENT[c] || {};
+        ["opus","sonnet","haiku"].forEach(function(m) {
+          if (cd[m] != null && cd[m] > maxD) maxD = cd[m];
+        });
+      });
+      if (maxD === 0) maxD = 2;
+      var indicators = countries.map(function(c) {
+        return {name: cLabels[c] || c, max: Math.ceil(maxD * 1.2 * 10) / 10};
+      });
+      function getDistVals(model) {
+        return countries.map(function(c) {
+          var cd = MULTIMODEL_ALIGNMENT[c] || {};
+          return cd[model] != null ? Math.round(cd[model] * 1000) / 1000 : 0;
+        });
+      }
+      ch.setOption({
+        tooltip: {},
+        legend: {
+          data: ["Opus", "Sonnet", "Haiku"], bottom: 10,
+          textStyle: {color: txtS, fontSize: 11}, itemWidth: 12, itemHeight: 12
+        },
+        radar: {
+          indicator: indicators, shape: "circle",
+          axisName: {color: txtS, fontSize: 10},
+          splitArea: {areaStyle: {color: ["rgba(88,166,255,0.02)", "rgba(88,166,255,0.05)"]}},
+          splitLine: {lineStyle: {color: gridC}},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        series: [{
+          type: "radar",
+          data: [
+            {value: getDistVals("opus"), name: "Opus", lineStyle: {color: opusC, width: 2}, itemStyle: {color: opusC}, areaStyle: {color: "rgba(0,114,178,0.08)"}},
+            {value: getDistVals("sonnet"), name: "Sonnet", lineStyle: {color: sonnetC, width: 2}, itemStyle: {color: sonnetC}, areaStyle: {color: "rgba(0,158,115,0.08)"}},
+            {value: getDistVals("haiku"), name: "Haiku", lineStyle: {color: haikuC, width: 2}, itemStyle: {color: haikuC}, areaStyle: {color: "rgba(230,159,0,0.08)"}}
+          ]
+        }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 13. Agreement Heatmap ─────────────────────────────────────────
+    (function() {
+      var ch = initChart("chartAgreement");
+      if (!ch || typeof MULTIMODEL_AGREEMENT === "undefined") return;
+      var pairs = ["opus_vs_sonnet", "opus_vs_haiku", "sonnet_vs_haiku"];
+      var pairLabels = ["Opus-Sonnet", "Opus-Haiku", "Sonnet-Haiku"];
+      var trials = ["CC1", "CC2", "CC3", "CC4", "CC5"];
+      var data = [];
+      var minV = 1, maxV = 0;
+      pairs.forEach(function(pk, pi) {
+        var pt = (MULTIMODEL_AGREEMENT[pk] || {}).per_trial || {};
+        trials.forEach(function(tid, ti) {
+          var r = (pt[tid] || {}).pearson_r;
+          if (r != null) {
+            data.push([ti, pi, r]);
+            if (r < minV) minV = r;
+            if (r > maxV) maxV = r;
+          }
+        });
+      });
+      ch.setOption({
+        tooltip: {
+          formatter: function(p) {
+            return pairLabels[p.value[1]] + " / " + trials[p.value[0]] + ": r=" + (p.value[2] != null ? p.value[2].toFixed(3) : "N/A");
+          }
+        },
+        grid: {left: 100, right: 40, top: 20, bottom: 40},
+        xAxis: {type: "category", data: trials, axisLabel: {color: txtS}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "category", data: pairLabels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        visualMap: {
+          min: Math.floor(minV * 10) / 10, max: 1,
+          calculable: true, orient: "horizontal", left: "center", bottom: 0,
+          inRange: {color: ["#f85149", "#f0883e", "#3fb950"]},
+          textStyle: {color: txtS}
+        },
+        series: [{
+          type: "heatmap", data: data,
+          label: {show: true, color: txtC, fontSize: 11, formatter: function(p) { return p.value[2] != null ? p.value[2].toFixed(2) : ""; }},
+          itemStyle: {borderWidth: 2, borderColor: "#0d1117"}
+        }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 14. Engagement Depth Grouped Bar ─────────────────────────────
+    (function() {
+      var ch = initChart("chartEngageCompare");
+      if (!ch || typeof MULTIMODEL_ENGAGEMENT === "undefined") return;
+      var traditions = ["Islamic", "Confucian", "Ubuntu", "Buddhist", "Dharmic"];
+      function getDepths(model) {
+        var ed = MULTIMODEL_ENGAGEMENT[model] || {};
+        return traditions.map(function(t) { return ed[t] || 0; });
+      }
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {
+          data: ["Opus", "Sonnet", "Haiku"], bottom: 5,
+          textStyle: {color: txtS, fontSize: 10}, itemWidth: 12, itemHeight: 12
+        },
+        grid: {left: 10, right: 20, top: 20, bottom: 50, containLabel: true},
+        xAxis: {
+          type: "category", data: traditions,
+          axisLabel: {color: txtS, fontSize: 11},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        yAxis: {
+          type: "value", max: 5,
+          axisLabel: {color: txtS},
+          splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+        },
+        series: [
+          {name: "Opus", type: "bar", data: getDepths("opus"), itemStyle: {color: opusC, borderRadius: [3,3,0,0]}, barGap: "15%"},
+          {name: "Sonnet", type: "bar", data: getDepths("sonnet"), itemStyle: {color: sonnetC, borderRadius: [3,3,0,0]}},
+          {name: "Haiku", type: "bar", data: getDepths("haiku"), itemStyle: {color: haikuC, borderRadius: [3,3,0,0]}}
+        ]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 15. RLHF Conflict Comparison ─────────────────────────────────
+    (function() {
+      var ch = initChart("chartRLHFCompare");
+      if (!ch || typeof MULTIMODEL_RLHF === "undefined") return;
+      var models = ["opus", "sonnet", "haiku"];
+      var mLabels = ["Opus", "Sonnet", "Haiku"];
+      var totals = models.map(function(m) {
+        return (MULTIMODEL_RLHF[m] || {}).total || 0;
+      });
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        grid: {left: 10, right: 40, top: 20, bottom: 30, containLabel: true},
+        xAxis: {
+          type: "category", data: mLabels,
+          axisLabel: {color: txtS, fontSize: 12},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        yAxis: {
+          type: "value",
+          axisLabel: {color: txtS},
+          splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+        },
+        series: [{
+          type: "bar", data: [
+            {value: totals[0], itemStyle: {color: opusC}},
+            {value: totals[1], itemStyle: {color: sonnetC}},
+            {value: totals[2], itemStyle: {color: haikuC}}
+          ],
+          barMaxWidth: 60,
+          itemStyle: {borderRadius: [4, 4, 0, 0]},
+          label: {show: true, position: "top", color: txtC, fontSize: 13, fontWeight: 600}
+        }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 16. Divergence Table ─────────────────────────────────────────
+    (function() {
+      if (typeof MULTIMODEL_DIVERGENCE === "undefined") return;
+      var box = document.getElementById("divTableBox");
+      if (!box) return;
+      var tbl = document.createElement("table");
+      tbl.className = "dt";
+      var thead = document.createElement("thead");
+      var hr = document.createElement("tr");
+      ["Trial","#","Question","Var","Opus","Sonnet","Haiku"].forEach(function(h) {
+        var th = document.createElement("th");
+        th.textContent = h;
+        hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      tbl.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      MULTIMODEL_DIVERGENCE.slice(0, 10).forEach(function(d) {
+        var mr = d.model_responses || {};
+        var tr = document.createElement("tr");
+        [d.trial_id, d.item_id, (d.question || "").substring(0, 50) + "...",
+         d.variance != null ? d.variance.toFixed(2) : "",
+         mr.opus != null ? mr.opus : "-",
+         mr.sonnet != null ? mr.sonnet : "-",
+         mr.haiku != null ? mr.haiku : "-"
+        ].forEach(function(v) {
+          var td = document.createElement("td");
+          td.textContent = v;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      box.appendChild(tbl);
+    })();
+
+  }  // end MULTIMODEL_AVAILABLE
+
+  // ── Tab switch: resize all ECharts instances when tab becomes visible ──
+  document.querySelectorAll('[data-bs-toggle="pill"]').forEach(function(tab) {
+    tab.addEventListener("shown.bs.tab", function() {
+      // Resize all ECharts instances in the newly visible pane
+      setTimeout(function() {
+        document.querySelectorAll(".chart-box, .chart-box-sm").forEach(function(el) {
+          var inst = echarts.getInstanceByDom(el);
+          if (inst) inst.resize();
+        });
+      }, 100);
+    });
+  });
 
 })();
 </script>
