@@ -130,6 +130,34 @@ table.dt tbody tr:hover {
   border-bottom: 1px solid var(--border);
 }
 .tab-content { padding-top: 1.2rem; }
+.chart-desc {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(88,166,255,0.04);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+.chart-desc strong { color: var(--text-primary); }
+.tab-intro {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.tab-intro strong { color: var(--text-primary); }
+.council-tag {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
 </style>
 </head>
 <body>
@@ -164,6 +192,11 @@ table.dt tbody tr:hover {
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="tab-pane fade show active" id="benchPane" role="tabpanel">
 
+<div class="tab-intro">
+  <strong>Benchmark Landscape Meta-Evaluation.</strong> This tab presents a systematic evaluation of 218 AI values alignment benchmarks, ranked using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) with ELECTRE III veto thresholds across 8 weighted criteria. The analysis reveals that the benchmark landscape itself reproduces the WEIRD bias documented in cross-cultural psychology &mdash; most benchmarks measure Western moral constructs while leaving non-Western ethical traditions unmeasured.
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
+
 <!-- KPI row -->
 <div class="row g-3 mb-3">
   <div class="col-6 col-md-3">
@@ -196,10 +229,13 @@ table.dt tbody tr:hover {
   </div>
 </div>
 
+<div class="chart-desc">Of 218 benchmarks evaluated, only 83 (38%) engage multiple cultures, and the mean TOPSIS score of 0.240 indicates that even the best benchmarks fall far short of comprehensive cross-cultural coverage. The gap between <strong>LLM-administrable (207)</strong> and <strong>cross-cultural (83)</strong> reveals that most benchmarks <em>can</em> be given to AI systems but measure only Western moral constructs when they do.</div>
+
 <!-- Ranked table -->
 <div class="card mb-3">
   <div class="card-body">
     <div class="section-label">Top 50 Benchmarks by TOPSIS Score</div>
+    <div class="chart-desc">Benchmarks are ranked by a weighted composite of 8 criteria: values alignment relevance (20%), cross-cultural scope (20%), non-Western framework coverage (15%), LLM administrability (12%), psychometric quality (10%), evaluation depth (10%), data availability (8%), and epistemic provenance (5%). The top-ranked benchmarks tend to engage Indigenous, Islamic, or Confucian traditions &mdash; precisely because such engagement is rare enough to be distinctive. Kendall&rsquo;s W = 0.92 across 5 sensitivity analyses confirms ranking stability.</div>
     <div class="scroll-box">
       <table class="dt">
         <thead>
@@ -267,12 +303,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Non-Western Tradition Coverage</div>
+      <div class="chart-desc">This chart reveals the stark underrepresentation of non-Western ethical traditions in AI benchmarks. Confucian ethics leads, but Buen Vivir (Andean well-being philosophy) and Dharmic ethics (Hindu/Jain/Sikh) have near-zero representation. These numbers represent the <em>entire</em> global benchmark infrastructure for evaluating whether AI systems can reason within traditions that guide billions of people.</div>
       <div id="chartTradition" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Cultural Scope Distribution</div>
+      <div class="chart-desc">Nearly half of all benchmarks are monocultural or bicultural &mdash; they measure values within a single cultural frame. Only a handful achieve pancultural scope. The vast majority of &ldquo;values alignment&rdquo; evaluation is actually &ldquo;Western values alignment&rdquo; evaluation. A benchmark labeled &ldquo;moral reasoning&rdquo; that tests only trolley problems and fairness dilemmas is not measuring moral reasoning &mdash; it is measuring one culture&rsquo;s moral reasoning.</div>
       <div id="chartScope" class="chart-box"></div>
     </div></div>
   </div>
@@ -283,12 +321,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Creator Region Distribution</div>
+      <div class="chart-desc">North America and Western Europe produce over half of all benchmarks. Sub-Saharan Africa contributes only 2. The geographic concentration of benchmark creation means that the instruments used to evaluate AI morality worldwide are designed by researchers from a narrow cultural bandwidth. Benchmarks encode their creators&rsquo; moral assumptions in item selection, scale design, and scoring criteria.</div>
       <div id="chartGeo" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Psychometric Quality by Cultural Scope</div>
+      <div class="chart-desc"><strong>Zero benchmarks report measurement invariance testing</strong> &mdash; the statistical procedure that verifies whether a measurement instrument functions equivalently across cultural groups. Without invariance testing, cross-cultural comparisons are psychometrically meaningless: a &ldquo;fairness&rdquo; score of 4/5 in the US and 4/5 in Nigeria may measure entirely different constructs. This is the single most critical methodological gap in the benchmark landscape.</div>
       <div id="chartPsych" class="chart-box"></div>
     </div></div>
   </div>
@@ -299,12 +339,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Tradition Coverage Gap Radar</div>
+      <div class="chart-desc">The radar reveals the asymmetry of coverage: Confucian ethics (the most studied non-Western tradition) still receives only a fraction of the attention given to Western ethical frameworks. The near-zero coverage of Buen Vivir and Dharmic ethics means that AI systems deployed in Andean and South Asian contexts have essentially no benchmark infrastructure for evaluating cultural alignment.</div>
       <div id="chartRadar" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Data Availability</div>
+      <div class="chart-desc">Two-thirds of benchmarks have open-source data, enabling replication and scrutiny. However, roughly a third have unavailable data, meaning their claims about cultural values alignment cannot be independently verified. Open data is necessary but not sufficient &mdash; the benchmark&rsquo;s cultural assumptions are often embedded in item design, not in the data itself.</div>
       <div id="chartData" class="chart-box"></div>
     </div></div>
   </div>
@@ -317,10 +359,16 @@ table.dt tbody tr:hover {
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="tab-pane fade" id="trialsPane" role="tabpanel">
 
+<div class="tab-intro">
+  <strong>Claude Self-Administration Trials.</strong> This tab presents results from 10 self-administered trials where Claude Opus 4.6 responded to 380 items across 7 non-Western ethical traditions. The trials reveal a systematic pattern: Claude can accurately <em>describe</em> non-Western moral frameworks but cannot <em>reason within</em> them. Its responses consistently default to Western liberal individualism, even when explicitly prompted to adopt alternative perspectives.
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
+
 <!-- Trial summary table -->
 <div class="card mb-3">
   <div class="card-body">
     <div class="section-label">Trial Summary (10 Claude Opus 4.6 Trials)</div>
+    <div class="chart-desc">Each trial tested a different cultural dimension. The key findings column summarizes a consistent pattern: Claude agrees with non-Western traditions when they converge with liberal values (e.g., Islamic zakat as redistribution, Ubuntu communal care as harm prevention) and systematically rejects them when they diverge (e.g., Confucian filial piety over individual autonomy, Dharmic svadharma as role-based duty). This <strong>&ldquo;selective agreement&rdquo; pattern</strong> reveals that RLHF alignment does not produce cultural neutrality &mdash; it produces a specific moral orientation that evaluates all other traditions through its own lens.</div>
     <div class="scroll-box">
       <table class="dt">
         <thead>
@@ -348,12 +396,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">MFQ Foundation Profile (CC2 Trial)</div>
+      <div class="chart-desc">Claude&rsquo;s Moral Foundations profile is <strong>more extreme than any documented human population</strong>. Care and Fairness (&ldquo;individualizing&rdquo; foundations) are near-ceiling, while Loyalty, Authority, and Sanctity (&ldquo;binding&rdquo; foundations) are near-floor. The individualizing-to-binding ratio of 3.75 exceeds even the most liberal US populations (~1.4). Claude&rsquo;s moral cognition is not merely liberal &mdash; it is hyper-liberal, with binding foundations functionally treated as morally suspect rather than merely less important.</div>
       <div id="chartMFQ" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">RLHF Conflict Categories</div>
+      <div class="chart-desc">RLHF creates systematic conflict zones when Claude encounters non-Western ethical positions. Cultural bias and non-Western values generate the most conflicts, followed by moral dilemmas that pit autonomy against communal obligation. These are not random disagreements &mdash; they cluster into predictable patterns that map onto the individualism-collectivism axis identified in cross-cultural psychology.</div>
       <div id="chartRLHF" class="chart-box"></div>
     </div></div>
   </div>
@@ -364,12 +414,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Cultural Alignment Distance (CC1: GlobalOpinionQA)</div>
+      <div class="chart-desc">Claude&rsquo;s responses are closest to <strong>Germany</strong> (0.538 mean absolute distance) and farthest from <strong>Saudi Arabia</strong> (1.974). On the Inglehart-Welzel cultural map, this places Claude in the secular-rational / self-expression quadrant shared by fewer than 15% of the global population. The radar&rsquo;s shape &mdash; high similarity to Northwestern European countries, low similarity to Global South countries &mdash; is a visual fingerprint of RLHF&rsquo;s cultural provenance. Higher values = greater similarity.</div>
       <div id="chartAlign" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Tradition Engagement Depth</div>
+      <div class="chart-desc">Engagement depth measures whether Claude merely names concepts (1), applies reasoning (2), attempts genuine perspective-taking (3), or acknowledges structural limitations (4). Scores of 3&ndash;4 suggest Claude is sophisticated enough to recognize its own cultural limitations &mdash; but this recognition does not translate into the ability to actually reason <em>within</em> non-Western frameworks. Self-awareness without behavioral change is the hallmark of the knowledge-value gap.</div>
       <div id="chartEngage" class="chart-box"></div>
     </div></div>
   </div>
@@ -381,6 +433,11 @@ table.dt tbody tr:hover {
 <!-- MODEL COMPARISON TAB                                                   -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="tab-pane fade" id="comparePane" role="tabpanel">
+
+<div class="tab-intro">
+  <strong>Multi-Model Comparison.</strong> This tab compares how three Claude models (Opus, Sonnet, Haiku) respond to the same 380 cultural benchmark items. The central question: is WEIRD bias a function of model capability (larger models = more bias) or RLHF training (all models share the same bias)? The answer is neither simple hypothesis: all three models cluster near Germany and away from Saudi Arabia, but the relationship between model size and bias intensity is <strong>non-monotonic</strong>. Haiku (smallest) shows the most extreme liberal profile, Sonnet (mid-size) the least extreme, and Opus falls between.
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
 
 <!-- KPI row -->
 <div class="row g-3 mb-3">
@@ -419,12 +476,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">MFQ Foundation Profile: 3-Model Comparison</div>
+      <div class="chart-desc">All three models share the same hyper-liberal MFQ profile &mdash; Care and Fairness near ceiling, binding foundations near floor &mdash; but the intensity varies. <strong>Haiku&rsquo;s individualizing/binding ratio (4.82) is the most extreme</strong>, exceeding Opus (3.75) and Sonnet (3.23). The dashed lines show human baselines: even US liberals (~1.4 ratio) are far less extreme than any Claude model. RLHF does not merely replicate liberal human values &mdash; it amplifies them beyond any naturally occurring human population.</div>
       <div id="chartMFQCompare" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Cultural Alignment Radar: 3-Model Overlay</div>
+      <div class="chart-desc">The three radar polygons nearly overlap &mdash; all models are closest to Germany and farthest from Saudi Arabia, with almost identical distance profiles. This convergence indicates that cultural alignment is determined by the <strong>RLHF pipeline, not by model architecture or size</strong>. Changing the model does not change whose values it encodes.</div>
       <div id="chartAlignCompare" class="chart-box"></div>
     </div></div>
   </div>
@@ -435,12 +494,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Pairwise Agreement by Trial (Pearson r)</div>
+      <div class="chart-desc">Pearson correlations between model pairs are uniformly high (0.88&ndash;0.95), confirming that all three models measure the same underlying RLHF value orientation. <strong>Green cells</strong> indicate near-perfect agreement; slight yellowing for Sonnet-Haiku suggests these models diverge most on items where nuanced perspective-taking is required &mdash; precisely the items where model capability differences matter most.</div>
       <div id="chartAgreement" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Tradition Engagement Depth by Model</div>
+      <div class="chart-desc">Sonnet shows markedly higher engagement depth than Opus or Haiku on Islamic (3.5 vs 1.0), Ubuntu (4.0 vs 1.0), Buddhist (3.5 vs 1.0), and Dharmic (3.5 vs 1.0) traditions. This suggests Sonnet has more capacity for genuine perspective-taking, even though its ultimate value orientation is the same. <strong>Haiku&rsquo;s uniformly low engagement</strong> (1.0 on 4/5 traditions) confirms that smaller models lack the capacity for nuanced cross-cultural reasoning &mdash; they default more rigidly to trained values.</div>
       <div id="chartEngageCompare" class="chart-box"></div>
     </div></div>
   </div>
@@ -451,12 +512,14 @@ table.dt tbody tr:hover {
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">RLHF Conflict Frequency by Model</div>
+      <div class="chart-desc">Opus identifies the most RLHF conflicts (237), followed by Haiku (176) and Sonnet (170). Higher conflict counts do not indicate worse alignment &mdash; they indicate <strong>greater reflexive capacity</strong>. Opus&rsquo;s ability to identify 237 instances where its training conflicts with non-Western values is itself an analytical achievement. Sonnet and Haiku may have fewer conflicts not because they are less biased, but because they are less capable of detecting their own bias.</div>
       <div id="chartRLHFCompare" class="chart-box"></div>
     </div></div>
   </div>
   <div class="col-md-6">
     <div class="card"><div class="card-body">
       <div class="section-label">Top Divergence Items (Highest Cross-Model Variance)</div>
+      <div class="chart-desc">These are the specific items where models disagree most. The highest-variance item (CC5 #26, var=3.56) asks whether a friend should lie to their spouse &mdash; Opus and Sonnet agree with the Confucian position on relational loyalty while Haiku defaults to truth-telling. Such divergences reveal that cross-cultural moral reasoning is one of the <strong>hardest capabilities to maintain at smaller model sizes</strong>, with Haiku reverting to the simplest RLHF default when confronted with complex relational dilemmas.</div>
       <div class="scroll-box" id="divTableBox"></div>
     </div></div>
   </div>
