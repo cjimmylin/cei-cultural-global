@@ -191,6 +191,8 @@ table.data-table tr:hover td {
   <li class="nav-item"><a class="nav-link" data-tab="temporal" href="#">Temporal</a></li>
   <li class="nav-item"><a class="nav-link" data-tab="gap" href="#">Gap Analysis</a></li>
   <li class="nav-item"><a class="nav-link" data-tab="landscape" href="#">Landscape</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="dendrogram" href="#">Dendrogram</a></li>
+  <li class="nav-item"><a class="nav-link" data-tab="ca-biplot" href="#">CA Biplot</a></li>
   <li class="nav-item"><a class="nav-link" data-tab="methods" href="#">Methods</a></li>
 </ul>
 
@@ -508,6 +510,30 @@ table.data-table tr:hover td {
   </div>
 </div>
 
+<!-- ===== TAB 13: DENDROGRAM ===== -->
+<div class="tab-pane" id="tab-dendrogram">
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Hierarchical Clustering of Regions (Ward Linkage)</div>
+        <div class="chart-container-xl" id="chart-dendrogram"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 14: CA BIPLOT ===== -->
+<div class="tab-pane" id="tab-ca-biplot">
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card"><div class="card-body">
+        <div class="section-title">Correspondence Analysis Biplot (Regions &times; Frameworks)</div>
+        <div class="chart-container-xl" id="chart-ca-biplot"></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== TAB 12: METHODS ===== -->
 <div class="tab-pane" id="tab-methods">
   <div class="row g-3 mt-1">
@@ -615,6 +641,8 @@ function initTab(id) {
     case 'temporal': initTemporal(); break;
     case 'gap': initGap(); break;
     case 'landscape': initLandscape(); break;
+    case 'dendrogram': initDendrogram(); break;
+    case 'ca-biplot': initCABiplot(); break;
     case 'methods': initMethods(); break;
   }
 }
@@ -1147,6 +1175,147 @@ function initLandscape() {
     xAxis: { type: 'value', axisLabel: AXIS_LABEL, splitLine: SPLIT_LINE, axisLine: AXIS_LINE, name: 'Papers with Score > 0', nameTextStyle: AXIS_LABEL },
     yAxis: { type: 'category', data: fwEntries.map(f => f[0]).reverse(), axisLabel: AXIS_LABEL, axisLine: AXIS_LINE },
     series: [{ type: 'bar', data: fwEntries.map(f => f[1].count).reverse(), itemStyle: { color: '#3fb950', borderRadius: [0, 3, 3, 0] }, barMaxWidth: 20 }]
+  });
+}
+
+// ==========================================================================
+// TAB 13: DENDROGRAM
+// ==========================================================================
+function initDendrogram() {
+  const chart = getChart('chart-dendrogram');
+  chart.setOption({
+    tooltip: {
+      ...TOOLTIP,
+      trigger: 'item',
+      formatter: function(p) {
+        if (p.data.children) {
+          return 'Distance: ' + p.data.value;
+        }
+        return p.data.name;
+      }
+    },
+    series: [{
+      type: 'tree',
+      data: [DENDROGRAM],
+      orient: 'LR',
+      layout: 'orthogonal',
+      symbol: 'circle',
+      symbolSize: 8,
+      label: {
+        position: 'left',
+        verticalAlign: 'middle',
+        color: '#e6edf3',
+        fontSize: 12,
+        fontFamily: 'Inter'
+      },
+      leaves: {
+        label: {
+          position: 'right',
+          verticalAlign: 'middle',
+          color: '#e6edf3',
+          fontSize: 12
+        }
+      },
+      lineStyle: {
+        color: '#58a6ff',
+        width: 2
+      },
+      emphasis: {
+        focus: 'descendant'
+      },
+      expandAndCollapse: false,
+      animationDuration: 550,
+      animationDurationUpdate: 750
+    }]
+  });
+}
+
+// ==========================================================================
+// TAB 14: CA BIPLOT
+// ==========================================================================
+function initCABiplot() {
+  const ca = CORRESPONDENCE;
+  const chart = getChart('chart-ca-biplot');
+
+  // Region series (circles)
+  const regionData = Object.entries(ca.row_coords_display).map(([name, coords]) => ({
+    name: name,
+    value: coords
+  }));
+
+  // Framework series (triangles)
+  const frameworkData = Object.entries(ca.col_coords_display).map(([name, coords]) => ({
+    name: name,
+    value: coords
+  }));
+
+  chart.setOption({
+    tooltip: {
+      ...TOOLTIP,
+      trigger: 'item',
+      formatter: function(p) { return p.name + '<br>(' + p.value[0].toFixed(3) + ', ' + p.value[1].toFixed(3) + ')'; }
+    },
+    legend: {
+      data: ['Regions', 'Frameworks'],
+      textStyle: { color: '#e6edf3' },
+      top: 10
+    },
+    xAxis: {
+      type: 'value',
+      name: 'Dim 1 (' + ca.explained_variance_pct[0].toFixed(1) + '%)',
+      nameLocation: 'center',
+      nameGap: 30,
+      nameTextStyle: { color: '#8b949e', fontSize: 12 },
+      axisLine: AXIS_LINE,
+      axisLabel: AXIS_LABEL,
+      splitLine: SPLIT_LINE
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Dim 2 (' + ca.explained_variance_pct[1].toFixed(1) + '%)',
+      nameLocation: 'center',
+      nameGap: 40,
+      nameTextStyle: { color: '#8b949e', fontSize: 12 },
+      axisLine: AXIS_LINE,
+      axisLabel: AXIS_LABEL,
+      splitLine: SPLIT_LINE
+    },
+    series: [
+      {
+        name: 'Regions',
+        type: 'scatter',
+        data: regionData,
+        symbolSize: 16,
+        label: {
+          show: true,
+          formatter: function(p) { return p.name; },
+          position: 'right',
+          color: '#e6edf3',
+          fontSize: 11
+        },
+        itemStyle: { color: '#58a6ff' }
+      },
+      {
+        name: 'Frameworks',
+        type: 'scatter',
+        data: frameworkData,
+        symbol: 'triangle',
+        symbolSize: 14,
+        label: {
+          show: true,
+          formatter: function(p) { return p.name; },
+          position: 'top',
+          color: '#f0883e',
+          fontSize: 10,
+          fontStyle: 'italic'
+        },
+        itemStyle: { color: '#f0883e' }
+      }
+    ],
+    graphic: [
+      { type: 'line', shape: { x1: '0%', y1: '50%', x2: '100%', y2: '50%' }, style: { stroke: '#30363d', lineDash: [4, 4] }, silent: true, z: -1 },
+      { type: 'line', shape: { x1: '50%', y1: '0%', x2: '50%', y2: '100%' }, style: { stroke: '#30363d', lineDash: [4, 4] }, silent: true, z: -1 }
+    ]
   });
 }
 
