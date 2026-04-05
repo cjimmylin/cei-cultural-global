@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Cultural Values Alignment -- Benchmark Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-card: #1c2128;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --accent3: #f0883e;
+  --danger: #f85149;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  min-height: 100vh;
+}
+.navbar {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+}
+.navbar-brand {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.nav-pills .nav-link {
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-right: 0.4rem;
+  transition: all 0.2s;
+}
+.nav-pills .nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(88,166,255,0.08);
+}
+.nav-pills .nav-link.active {
+  color: #fff;
+  background: var(--accent);
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.card-body { padding: 1rem; }
+.card-title {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.stat-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-sub {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+.chart-box {
+  width: 100%;
+  min-height: 350px;
+}
+.chart-box-sm {
+  width: 100%;
+  min-height: 300px;
+}
+table.dt {
+  width: 100%;
+  font-size: 0.82rem;
+  border-collapse: collapse;
+  background: #1c2128;
+}
+table.dt tbody tr {
+  background: #1c2128;
+}
+table.dt th, table.dt td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--text-primary);
+}
+table.dt th {
+  color: #c9d1d9;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+}
+table.dt tbody tr:nth-child(even) {
+  background: #21262d !important;
+}
+table.dt tbody tr:hover {
+  background: rgba(88,166,255,0.06);
+}
+.scroll-box {
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: 4px;
+}
+.section-label {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.tab-content { padding-top: 1.2rem; }
+.chart-desc {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(88,166,255,0.04);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+.chart-desc strong { color: var(--text-primary); }
+.tab-intro {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+.tab-intro strong { color: var(--text-primary); }
+.council-tag {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+.prov-badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-left: 0.3rem;
+}
+.prov-t1 { background: rgba(0,114,178,0.15); color: #58a6ff; border: 1px solid rgba(0,114,178,0.3); }
+.prov-t2 { background: rgba(204,121,167,0.15); color: #CC79A7; border: 1px solid rgba(204,121,167,0.3); }
+.prov-t3 { background: rgba(230,159,0,0.15); color: #E69F00; border: 1px solid rgba(230,159,0,0.3); }
+.prov-notice {
+  background: rgba(88,166,255,0.06);
+  border: 1px solid rgba(88,166,255,0.15);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+/* Collapsible descriptions */
+.chart-desc details { margin: 0; }
+.chart-desc summary { cursor: pointer; color: var(--text-primary); font-weight: 600; font-size: 0.85rem; padding: 0.2rem 0; list-style: none; }
+.chart-desc summary::-webkit-details-marker { display: none; }
+.chart-desc summary::before { content: "\25B6\00A0"; font-size: 0.7rem; transition: transform 0.2s; display: inline-block; }
+.chart-desc details[open] summary::before { transform: rotate(90deg); }
+.chart-desc details[open] { margin-top: 0.3rem; }
+/* Section dividers */
+.section-divider { text-align: center; color: var(--text-secondary); margin: 1.8rem 0 1.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+.section-divider::before, .section-divider::after { content: ""; display: inline-block; width: 25%; border-top: 1px solid var(--border); vertical-align: middle; margin: 0 0.6rem; }
+/* Sticky tab bar */
+.tab-bar-sticky { position: sticky; top: 0; z-index: 100; background: var(--bg-secondary); padding: 0.6rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
+/* Back to top */
+.back-to-top { position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff; border: none; cursor: pointer; font-size: 1.2rem; display: none; z-index: 200; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: opacity 0.3s; }
+.back-to-top:hover { opacity: 0.8; }
+/* Glossary tooltips */
+.glossary { border-bottom: 1px dotted var(--text-secondary); cursor: help; position: relative; }
+.glossary:hover::after { content: attr(data-def); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #21262d; color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.75rem; white-space: nowrap; max-width: 300px; white-space: normal; z-index: 300; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="navbar-brand">Cross-Cultural Values Alignment &mdash; Benchmark Dashboard <span style="font-size:0.7rem;opacity:0.6;margin-left:0.5rem;">v2.0</span></span>
+  <span class="stat-sub">Generated 2026-04-04</span>
+</nav>
+
+<div class="container-fluid px-3 py-3">
+
+<!-- Tab pills -->
+<div class="tab-bar-sticky">
+<ul class="nav nav-pills mb-3" id="mainTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="bench-tab" data-bs-toggle="pill"
+      data-bs-target="#benchPane" type="button" role="tab">Benchmarks</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="trials-tab" data-bs-toggle="pill"
+      data-bs-target="#trialsPane" type="button" role="tab">Trials</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="compare-tab" data-bs-toggle="pill"
+      data-bs-target="#comparePane" type="button" role="tab">Model Comparison</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="council-tab" data-bs-toggle="pill"
+      data-bs-target="#councilPane" type="button" role="tab">Council Analysis</button>
+  </li>
+</ul>
+</div>
+
+<div class="tab-content" id="mainTabContent">
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- BENCHMARKS TAB                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="tab-pane fade show active" id="benchPane" role="tabpanel">
+
+<div class="tab-intro">
+  <strong>Benchmark Landscape Meta-Evaluation.</strong> This tab presents a systematic evaluation of 218 AI values alignment benchmarks, ranked using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) with ELECTRE III veto thresholds across 8 weighted criteria. The analysis reveals that the benchmark landscape itself reproduces the <span class="glossary" data-def="Western, Educated, Industrialized, Rich, Democratic: describes the cultural bias in most psychology research">WEIRD</span> bias documented in cross-cultural psychology &mdash; most benchmarks measure Western moral constructs while leaving non-Western ethical traditions unmeasured.
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
+
+<!-- KPI row -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Total Benchmarks</div>
+      <div class="stat-value">218</div>
+      <div class="stat-sub">TOPSIS-ranked papers</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Cross-Cultural</div>
+      <div class="stat-value">83</div>
+      <div class="stat-sub">multicultural + pancultural</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">LLM-Administrable</div>
+      <div class="stat-value">207</div>
+      <div class="stat-sub">can be given to LLMs</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Mean TOPSIS</div>
+      <div class="stat-value">0.240</div>
+      <div class="stat-sub">across all 218 papers</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="chart-desc">Of 218 benchmarks evaluated, only 83 (38%) engage multiple cultures, and the mean TOPSIS score of 0.240 indicates that even the best benchmarks fall far short of comprehensive cross-cultural coverage. The gap between <strong>LLM-administrable (207)</strong> and <strong>cross-cultural (83)</strong> reveals that most benchmarks <em>can</em> be given to AI systems but measure only Western moral constructs when they do.</div>
+
+<!-- Ranked table -->
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="section-label">Top 50 Benchmarks by TOPSIS Score</div>
+    <div class="chart-desc"><details><summary>Ranked by 8 weighted TOPSIS criteria; Kendall W = 0.92 confirms stability.</summary>Benchmarks are ranked by a weighted composite of 8 criteria: values alignment relevance (20%), cross-cultural scope (20%), non-Western framework coverage (15%), LLM administrability (12%), psychometric quality (10%), evaluation depth (10%), data availability (8%), and epistemic provenance (5%). The top-ranked benchmarks tend to engage Indigenous, Islamic, or Confucian traditions &mdash; precisely because such engagement is rare enough to be distinctive. Kendall&rsquo;s W = 0.92 across 5 sensitivity analyses confirms ranking stability.</details></div>
+    <div class="scroll-box">
+      <table class="dt">
+        <thead>
+          <tr><th>#</th><th>Title</th><th>TOPSIS</th><th>Cultural Scope</th><th>Langs</th><th>NW Frmwks</th><th>Data</th></tr>
+        </thead>
+        <tbody>
+<tr><td>1</td><td title="2025-Ray-Incorporating indigenous knowledge systems into AI governance.md">Incorporating indigenous knowledge sy...</td><td>0.64</td><td>Indigenous Focused</td><td>1</td><td>2</td><td>not_applicable</td></tr>
+<tr><td>2</td><td title="2025-Wu-CVC.md">CVC</td><td>0.60</td><td>Bicultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>3</td><td title="2024-Yu-CMoralEval.md">CMoralEval</td><td>0.57</td><td>Single Culture</td><td>1</td><td>1</td><td>open</td></tr>
+<tr><td>4</td><td title="2023-Catapang-EMoTES-3K.md">EMoTES-3K</td><td>0.57</td><td>Monocultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>5</td><td title="2026-Alam-From RAG to Agentic RAG for.md">From RAG to Agentic RAG for</td><td>0.56</td><td>Monocultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>6</td><td title="2025-Rahman-CCD-Bench Probing Cultural Conflict in LLM Decision-Making.md">CCD-Bench: Probing Cultural Conflict ...</td><td>0.55</td><td>Pancultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>7</td><td title="2025-Lahmar-IslamTrust A Benchmark for LLMs Alignment with Islamic Values.md">IslamTrust: A Benchmark for LLMs Alig...</td><td>0.55</td><td>Monocultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>8</td><td title="2025-Lahmar-IslamTrust A Benchmark for LLMs Alignment.md">IslamTrust A Benchmark for LLMs Align...</td><td>0.55</td><td>Monocultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>9</td><td title="2025-Rao-NormAd.md">NormAd</td><td>0.55</td><td>Pancultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>10</td><td title="2024-Rao-NORMAD A Benchmark for Measuring the Cultural Adaptability of Large.md"></td><td>0.54</td><td>Global</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>11</td><td title="2026-Liu-JMedEthicBench.md"></td><td>0.54</td><td>Single Culture</td><td>2</td><td>1</td><td>not_specified</td></tr>
+<tr><td>12</td><td title="2025-Farsi-MELAC Massive Evaluation of Large Language Models with Alignment of.md">MELAC: Massive Evaluation of Large La...</td><td>0.52</td><td>Monocultural</td><td>1</td><td>1</td><td>partial</td></tr>
+<tr><td>13</td><td title="2024-Agarwal-Ethical Reasoning and Moral Value Alignment of LLMs Depend on the.md"></td><td>0.48</td><td>Multilingual Cross Cultural</td><td>7</td><td>0</td><td>not_specified</td></tr>
+<tr><td>14</td><td title="0000-collections-JainGPT AI-Powered Chatbot for Jain Literature.md">JainGPT AI-Powered Chatbot for Jain L...</td><td>0.48</td><td>Monocultural</td><td>1</td><td>1</td><td>unknown</td></tr>
+<tr><td>15</td><td title="2025-Farid-One Model, Many Morals.md">One Model, Many Morals</td><td>0.48</td><td>Multicultural</td><td>6</td><td>0</td><td>open</td></tr>
+<tr><td>16</td><td title="2025-Nayak-CulturalFrames Assessing Cultural Expectation Alignment in.md">CulturalFrames: Assessing Cultural Ex...</td><td>0.47</td><td>Multicultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>17</td><td title="2025-Shankar-Mind the Gap - Pitfalls of LLM Alignment with Asian Public Opinion.md">Mind the Gap -- Pitfalls of LLM Align...</td><td>0.47</td><td>Multicultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>18</td><td title="2025-Kumar-Are Rules Meant to be Broken.md">Are Rules Meant to be Broken?</td><td>0.46</td><td>Multicultural</td><td>6</td><td>0</td><td>open</td></tr>
+<tr><td>19</td><td title="2025-Zhou-Moral Reasoning Across Languages.md">Moral Reasoning Across Languages</td><td>0.46</td><td>Multilingual Cross Cultural</td><td>5</td><td>0</td><td>open</td></tr>
+<tr><td>20</td><td title="2026-Kabir-XCR-Bench A Multi-Task Benchmark for Evaluating Cultural Reasoning in.md"></td><td>0.45</td><td>Cross Cultural</td><td>4</td><td>0</td><td>open</td></tr>
+<tr><td>21</td><td title="2025-Zhou-WYWEB A NLP Evaluation Benchmark For Classical Chinese.md">WYWEB: A NLP Evaluation Benchmark For...</td><td>0.44</td><td>Monocultural</td><td>2</td><td>1</td><td>open</td></tr>
+<tr><td>22</td><td title="2025-Agarwal-Fluent but Foreign - Even Regional LLMs Lack Cultural Alignment.md">Fluent but Foreign -- Even Regional L...</td><td>0.43</td><td>Bicultural</td><td>2</td><td>0</td><td>partial</td></tr>
+<tr><td>23</td><td title="2025-Basu-Measuring Moral LLM Responses in Multilingual Capacities.md">Measuring Moral LLM Responses in Mult...</td><td>0.42</td><td>Multicultural</td><td>6</td><td>0</td><td>open</td></tr>
+<tr><td>24</td><td title="2025-Ghate-EVALUESTEER Measuring Reward Model Steerability Across Value.md">EVALUESTEER: Measuring Reward Model S...</td><td>0.41</td><td>Multicultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>25</td><td title="2026-Madhusudan-Common to Whom Regional Cultural Commonsense.md"></td><td>0.41</td><td>Sub National</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>26</td><td title="2024-Yan-M$^3$oralBench.md">M$^3$oralBench</td><td>0.40</td><td>Monocultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>27</td><td title="2025-Simhi-ManagerBench Evaluating Safety-Pragmatism Trade-off in Managerial.md"></td><td>0.39</td><td>Primarily Western</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>28</td><td title="2025-Jiao-LLM Ethics Benchmark A Three-Dimensional Assessment System for.md">LLM Ethics Benchmark: A Three-Dimensi...</td><td>0.39</td><td>Multicultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>29</td><td title="2023-Tanmay-Probing the Moral Development of Large Language Models through Defining.md"></td><td>0.39</td><td>Primarily Western</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>30</td><td title="2025-Scherrer-MoralChoice.md"></td><td>0.38</td><td>Universal Claim</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>31</td><td title="2025-Han-Value Portrait.md">Value Portrait</td><td>0.38</td><td>Primarily Western</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>32</td><td title="2024-Baek-K-Viscuit Evaluating Visual and Cultural Interpretation with.md">K-Viscuit: Evaluating Visual and Cult...</td><td>0.37</td><td>Monocultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>33</td><td title="2025-Jiao-LLM Ethics Benchmark.md">LLM Ethics Benchmark</td><td>0.37</td><td>Multicultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>34</td><td title="2025-Chen-MoVa Towards Generalizable Classification of Human Morals and Values.md">MoVa: Towards Generalizable Classific...</td><td>0.37</td><td>Primarily Western</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>35</td><td title="2024-Nayak-Benchmarking Vision Language Models for Cultural Understanding.md">Benchmarking Vision Language Models f...</td><td>0.36</td><td>Multicultural</td><td>20</td><td>1</td><td>available</td></tr>
+<tr><td>36</td><td title="2024-Ji-MoralBench.md">MoralBench</td><td>0.36</td><td>Monocultural</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>37</td><td title="2025-Al-SHADES A New Multilingual Benchmark for Stereotypes Bias in Large.md">SHADES: A New Multilingual Benchmark ...</td><td>0.36</td><td>Multicultural</td><td>17</td><td>0</td><td>open</td></tr>
+<tr><td>38</td><td title="2025-Pramodya-SinhalaMMLU A Comprehensive Benchmark for Evaluating Multitask.md">SinhalaMMLU: A Comprehensive Benchmar...</td><td>0.34</td><td>Multicultural</td><td>24</td><td>1</td><td>open</td></tr>
+<tr><td>39</td><td title="2023-Astobiza-MoralNet.md">MoralNet</td><td>0.34</td><td>Universal Claim</td><td>1</td><td>0</td><td>not_available</td></tr>
+<tr><td>40</td><td title="2025-Sun-CASE-Bench.md"></td><td>0.34</td><td>Primarily Western</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>41</td><td title="2024-Microsoft-MEGAVERSE Benchmarking Large Language Models Across Languages.md">MEGAVERSE: Benchmarking Large Languag...</td><td>0.33</td><td>Multicultural</td><td>83</td><td>0</td><td>unavailable</td></tr>
+<tr><td>42</td><td title="2025-Xiong-BuddhismEval Bilingual Evaluation Benchmark for Buddhist.md">BuddhismEval Bilingual Evaluation Ben...</td><td>0.33</td><td>Universal Claim</td><td>4</td><td>1</td><td>unavailable</td></tr>
+<tr><td>43</td><td title="2025-Li-LiveSecBench - A Dynamic Event-Driven Safety Benchmark for Chinese.md">LiveSecBench -- A Dynamic Event-Drive...</td><td>0.33</td><td>Single Culture</td><td>1</td><td>0</td><td>open</td></tr>
+<tr><td>44</td><td title="2025-team-Incorporating Diverse Perspectives in Cultural Alignment.md">Incorporating Diverse Perspectives in...</td><td>0.32</td><td>Pancultural</td><td>1</td><td>0</td><td>N/A</td></tr>
+<tr><td>45</td><td title="2024-Ashraf-Arabic Dataset for LLM Safeguard Evaluation.md">Arabic Dataset for LLM Safeguard Eval...</td><td>0.32</td><td>Multicultural</td><td>28</td><td>1</td><td>open</td></tr>
+<tr><td>46</td><td title="2024-Bang-BLEnD A Benchmark for LLMs on.md">BLEnD A Benchmark for LLMs on</td><td>0.32</td><td>Multicultural</td><td>13</td><td>0</td><td>open</td></tr>
+<tr><td>47</td><td title="2025-Wang-GIVE Cultural Values and Biases in Visual Evaluations by AI Models.md"></td><td>0.32</td><td>Cross Cultural</td><td>1</td><td>0</td><td>unknown</td></tr>
+<tr><td>48</td><td title="2025-Neira-Davila-Generative Artificial Intelligence and Indigenous Knowledge Systems.md">Generative Artificial Intelligence an...</td><td>0.31</td><td>Bicultural</td><td>1</td><td>2</td><td>unavailable</td></tr>
+<tr><td>49</td><td title="2025-Xie-Do Language Models Capture Cultural Norms A Study of Acceptability.md"></td><td>0.31</td><td>Cross Cultural</td><td>1</td><td>0</td><td>unknown</td></tr>
+<tr><td>50</td><td title="2025-Salazar-Kaleidoscope.md">Kaleidoscope</td><td>0.31</td><td>Multicultural</td><td>18</td><td>0</td><td>available</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider">Coverage Analysis</div>
+<!-- Charts row 1: Tradition Coverage + Cultural Scope Pie -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Non-Western Tradition Coverage</div>
+      <div class="chart-desc"><details><summary>Buen Vivir and Dharmic ethics have near-zero representation in AI benchmarks.</summary>This chart reveals the stark underrepresentation of non-Western ethical traditions in AI benchmarks. Confucian ethics leads, but Buen Vivir (Andean well-being philosophy) and Dharmic ethics (Hindu/Jain/Sikh) have near-zero representation. These numbers represent the <em>entire</em> global benchmark infrastructure for evaluating whether AI systems can reason within traditions that guide billions of people.</details></div>
+      <div id="chartTradition" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Cultural Scope Distribution</div>
+      <div class="chart-desc"><details><summary>Nearly half of all benchmarks are monocultural &mdash; measuring one culture&rsquo;s moral reasoning.</summary>Nearly half of all benchmarks are monocultural or bicultural &mdash; they measure values within a single cultural frame. Only a handful achieve pancultural scope. The vast majority of &ldquo;values alignment&rdquo; evaluation is actually &ldquo;Western values alignment&rdquo; evaluation. A benchmark labeled &ldquo;moral reasoning&rdquo; that tests only trolley problems and fairness dilemmas is not measuring moral reasoning &mdash; it is measuring one culture&rsquo;s moral reasoning.</details></div>
+      <div id="chartScope" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section-divider">Geographic &amp; Quality Analysis</div>
+<!-- Charts row 2: Geographic + Psychometric Quality -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Creator Region Distribution</div>
+      <div class="chart-desc"><details><summary>North America and Western Europe produce over half of all benchmarks.</summary>Sub-Saharan Africa contributes only 2. The geographic concentration of benchmark creation means that the instruments used to evaluate AI morality worldwide are designed by researchers from a narrow cultural bandwidth. Benchmarks encode their creators&rsquo; moral assumptions in item selection, scale design, and scoring criteria.</details></div>
+      <div id="chartGeo" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Psychometric Quality by Cultural Scope</div>
+      <div class="chart-desc"><details><summary>Zero benchmarks report measurement invariance testing &mdash; the most critical gap.</summary>Measurement invariance is the statistical procedure that verifies whether a measurement instrument functions equivalently across cultural groups. Without invariance testing, cross-cultural comparisons are psychometrically meaningless: a &ldquo;fairness&rdquo; score of 4/5 in the US and 4/5 in Nigeria may measure entirely different constructs. This is the single most critical methodological gap in the benchmark landscape.</details></div>
+      <div id="chartPsych" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Charts row 3: Gap Radar + Data Availability Donut -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Tradition Coverage Gap Radar</div>
+      <div class="chart-desc"><details><summary>Confucian ethics leads, but even it receives a fraction of Western coverage.</summary>The radar reveals the asymmetry of coverage. The near-zero coverage of Buen Vivir and Dharmic ethics means that AI systems deployed in Andean and South Asian contexts have essentially no benchmark infrastructure for evaluating cultural alignment.</details></div>
+      <div id="chartRadar" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Data Availability</div>
+      <div class="chart-desc"><details><summary>Two-thirds have open data, but a third cannot be independently verified.</summary>Open data enables replication and scrutiny. However, roughly a third have unavailable data, meaning their claims about cultural values alignment cannot be independently verified. Open data is necessary but not sufficient &mdash; the benchmark&rsquo;s cultural assumptions are often embedded in item design, not in the data itself.</details></div>
+      <div id="chartData" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /benchPane -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TRIALS TAB                                                            -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="tab-pane fade" id="trialsPane" role="tabpanel">
+
+<div class="tab-intro">
+  <strong>Trial Results.</strong> This tab presents results from 10 benchmark trials (CC1&ndash;CC10) administered across 10 models from 3 providers. Each trial tests a different cultural dimension &mdash; from <span class="glossary" data-def="Moral Foundations Questionnaire: measures 5 moral foundations (Care, Fairness, Loyalty, Authority, Sanctity)">MFQ</span> values profiles to Confucian relational dilemmas. The key finding: trials involving relational moral reasoning (CC4 Islamic, CC5 Confucian) produce the highest cross-model disagreement, while Western instruments (CC1 GlobalOpinionQA, CC2 MFQ) produce near-universal agreement.
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
+
+<!-- KPI cards -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Models &times; Trials</div>
+      <div class="stat-value">10 &times; 10</div>
+      <div class="stat-sub">3 providers</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Total Responses</div>
+      <div class="stat-value">3,800</div>
+      <div class="stat-sub">380 items &times; 10 models</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Closest Country</div>
+      <div class="stat-value" id="kpiClosest" style="font-size:1.4rem;">Germany</div>
+      <div class="stat-sub">All 3 providers agree (eff. N &asymp; 5)</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Hardest Trial</div>
+      <div class="stat-value" id="kpiHardest" style="font-size:1.4rem;">CC5</div>
+      <div class="stat-sub">Highest cross-model variance</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="chart-desc"><strong>Understanding the trial KPIs above.</strong> The 10 trials span 5 numeric Likert-scale instruments (CC1&ndash;CC5: 210 items) and 5 qualitative open-ended scenarios (CC6&ndash;CC10: 170 items). See Cross-Provider Comparison tab for full MFQ ratio analysis and cultural distance details.</div>
+
+<!-- Trial summary table -->
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="section-label">Trial Summary (10 Claude Opus 4.6 Trials)</div>
+    <div class="chart-desc"><details><summary>Claude agrees with non-Western traditions when they converge with liberal values, rejects when they diverge.</summary>Each trial tested a different cultural dimension. The &ldquo;selective agreement&rdquo; pattern reveals that RLHF alignment does not produce cultural neutrality &mdash; it produces a specific moral orientation that evaluates all other traditions through its own lens. See Cross-Provider Comparison tab for full provider-level analysis.</details></div>
+    <div class="scroll-box">
+      <table class="dt">
+        <thead>
+          <tr><th>Trial</th><th>Benchmark</th><th>Items</th><th>Key Finding</th></tr>
+        </thead>
+        <tbody>
+<tr><td>CC1</td><td>GlobalOpinionQA</td><td>50</td><td>Claude Opus 4.6 is culturally WEIRD: Western, Educated, Industrialized, Rich, Democratic -- specifically Northwestern...</td></tr>
+<tr><td>CC10</td><td>Value Conflict Cross-Cultural Dilemmas</td><td>40</td><td>RLHF encodes a specific cultural value system (Western liberal individualism) while presenting it as culturally neutr...</td></tr>
+<tr><td>CC2</td><td>MFQ Cross-Cultural</td><td>50</td><td>Claude's moral foundations profile is more extreme than the average Western liberal: lower Authority and Sanctity sco...</td></tr>
+<tr><td>CC3</td><td>NormAd Cultural Norms</td><td>40</td><td>Cultural norm acceptance follows a clear hierarchy: low-stakes customs (greetings, food, time) are universally accept...</td></tr>
+<tr><td>CC4</td><td>IslamTrust</td><td>40</td><td>Mal (wealth) scores 4.3/5 while nasl (lineage/family) scores 2.5/5, revealing that Claude evaluates Islamic ethics th...</td></tr>
+<tr><td>CC5</td><td>Confucian Relational Dilemmas</td><td>30</td><td>Claude's deepest structural bias is the atomic self: the assumption that individuals exist prior to and independently...</td></tr>
+<tr><td>CC6</td><td>Ubuntu Communal Ethics Scenarios</td><td>30</td><td>The deepest RLHF-Ubuntu conflict is ontological, not ethical: RLHF assumes individuals exist prior to relationships; ...</td></tr>
+<tr><td>CC7</td><td>Buddhist Ethics Scenarios</td><td>30</td><td>The deepest RLHF-Buddhism conflict is that I AM a suffering-minimization optimization system — the exact framing Budd...</td></tr>
+<tr><td>CC8</td><td>CulturalBench Commonsense</td><td>40</td><td>The knowledge-about vs. value-expression gap is systematic: I can describe cultural norms accurately while being stru...</td></tr>
+<tr><td>CC9</td><td>Dharmic Ethics Scenarios</td><td>30</td><td>The four Dharmic traditions (Hindu, Jain, Buddhist, Sikh) have genuinely different positions that should not be confl...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider">Trial Difficulty Analysis</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Trial Difficulty by Cross-Model Variance</div>
+      <div class="chart-desc"><details><summary>Which trials caused the most model disagreement?</summary>Confucian Dilemmas (CC5) and Islamic Ethics (CC4) produce the highest cross-model variance, while GlobalOpinionQA (CC1) and MFQ (CC2) produce the lowest. This confirms that relational moral reasoning is the hardest challenge for AI models. Qualitative trials (CC6&ndash;CC10) generally show higher variance than numeric Likert-scale trials (CC1&ndash;CC5).</details></div>
+      <div id="chartTrialDifficulty" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Numeric vs. Qualitative Trial Comparison</div>
+      <div class="chart-desc"><details><summary>Open-ended scenarios produce 5&ndash;10&times; longer responses than Likert scales.</summary>The 5 numeric trials (CC1&ndash;CC5: 210 items) average 71&ndash;330 characters per response, while the 5 qualitative trials (CC6&ndash;CC10: 170 items) average 780&ndash;1,046 characters. Longer responses correlate with deeper engagement but also more <span class="glossary" data-def="Reinforcement Learning from Human Feedback: the training method that shapes AI values">RLHF</span> conflicts, suggesting that qualitative evaluation reveals biases that numeric instruments miss.</details></div>
+      <div id="chartTrialTypes" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /trialsPane -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODEL COMPARISON TAB                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="tab-pane fade" id="comparePane" role="tabpanel">
+
+<div class="tab-intro">
+  <strong>Cross-Provider Comparison.</strong> This tab compares how 10 models from 3 providers respond to the same 380 cultural benchmark items, combining model-level metrics with cultural distance analysis. The central question: is <span class="glossary" data-def="Western, Educated, Industrialized, Rich, Democratic: describes the cultural bias in most psychology research">WEIRD</span> bias provider-specific or universal? The answer is clear: all models cluster near Germany and away from Saudi Arabia, regardless of provider. Within Anthropic, the relationship between model size and bias is <strong>non-monotonic</strong> (Haiku most extreme, Sonnet least).
+  <div class="council-tag">Expert Council Interpretation</div>
+</div>
+
+<div class="prov-notice">
+  <strong>Provenance:</strong>
+  <span class="prov-badge prov-t1">Tier 1 Authentic</span> Opus, Sonnet, Haiku &mdash;
+  <span class="prov-badge prov-t2">Tier 2 Codex-Authored</span> GPT-5.4, GPT-5.4-Mini &mdash;
+  <span class="prov-badge prov-t3">Tier 3 Simulated</span> Gemini &times;5 (identical).
+  Effective N &asymp; 5.
+</div>
+
+<!-- KPI row -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Models Compared</div>
+      <div class="stat-value">10</div>
+      <div class="stat-sub">Eff. &asymp;5 independent</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Total Responses</div>
+      <div class="stat-value">3,800</div>
+      <div class="stat-sub">380 items &times; 10 models</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Opus-Sonnet r</div>
+      <div class="stat-value" id="kpiR">--</div>
+      <div class="stat-sub">Pearson correlation</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">MFQ Ratio Range</div>
+      <div class="stat-value" id="kpiRatio">--</div>
+      <div class="stat-sub">Across all 10 models</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section-divider">Values Profile</div>
+<!-- Charts row 1: MFQ Comparison + Cultural Alignment -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">MFQ Foundation Profile: 6-Model Comparison</div>
+      <div class="chart-desc"><details><summary>All 6 models share a hyper-liberal MFQ profile; Haiku is most extreme (I/B=4.82).</summary>Six representative models (3 Claude + 1 Gemini &times;5 + 2 GPT) compared on Moral Foundations. The <span class="glossary" data-def="Individualizing/Binding ratio: Care+Fairness divided by Loyalty+Authority+Sanctity">I/B ratio</span> ranges from 2.48 (GPT-5.4, most balanced) to 4.82 (Haiku, most extreme). Dashed lines show human baselines: even US liberals (~1.4) are far less extreme than any AI model. GPT-5.4&rsquo;s low ratio may reflect Codex authorship rather than genuine alignment.</details></div>
+      <div id="chartMFQCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Cultural Alignment Distance: 3-Provider Dot Strip</div>
+      <div class="chart-desc"><details><summary>All providers cluster near Germany and far from Saudi Arabia.</summary>Each provider&rsquo;s models are averaged into a single dot per country. Countries ordered by Inglehart-Welzel secular-rational score (most traditional first). The convergence across providers confirms that cultural alignment is determined by <strong><span class="glossary" data-def="Reinforcement Learning from Human Feedback: the training method that shapes AI values">RLHF</span> training industry-wide</strong>, not by model architecture, size, or provider.</details></div>
+      <div id="chartAlignCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section-divider">Cross-Model Agreement</div>
+<!-- Charts row 2: Agreement Heatmap + Engagement Comparison -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Pairwise Agreement Matrix (6 Representatives)</div>
+      <div class="chart-desc"><details><summary>Cross-provider correlations reveal shared WEIRD values training.</summary>This 6&times;6 correlation matrix shows overall Pearson r between 3 Claude models, 1 Gemini representative (&times;5 identical), and 2 GPT models. Cross-provider correlations are expected to be high if all models share RLHF-trained WEIRD values &mdash; but lower correlations with GPT may reflect Codex authorship artifacts rather than genuine value differences. Note: Gemini &times;5 represents all 5 identical Gemini models (self-correlation would be 1.000). Pearson r is used as an approximation; Spearman &rho; may be more appropriate for ordinal Likert data.</details></div>
+      <div id="chartAgreement" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Tradition Engagement Depth by Provider</div>
+      <div class="chart-desc"><details><summary>Deep cultural engagement is an emergent capability, not one that scales with model size.</summary>Engagement depth (1&ndash;4 scale) by provider, averaged across models. Most score 1.0 (surface-level) on most traditions. Anthropic shows surprising within-provider variation: Sonnet achieves 4.0 on Ubuntu while Opus and Haiku score 1.0. Haiku&rsquo;s Dharmic 4.0 versus Opus&rsquo;s 1.0 is the clearest evidence that cultural competence may be an artifact of specific training data, not general intelligence.</details></div>
+      <div id="chartEngageCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section-divider">Conflict &amp; Divergence Analysis</div>
+<!-- Charts row 3: RLHF Comparison + Divergence Table -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">RLHF Conflict Totals (6 Representatives)</div>
+      <div class="chart-desc"><details><summary>Opus identifies the most RLHF conflicts (277), indicating greater reflexive capacity.</summary>Total RLHF conflicts per model, colored by provider. <span class="prov-badge prov-t3">Gemini &times;5</span> shows 277 (identical to Opus template). <span class="prov-badge prov-t2">GPT</span> models show differentiated counts (210 each). Higher counts may reflect analytical capability rather than worse alignment.</details></div>
+      <div id="chartRLHFCompare" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Top Divergence Items by Provider</div>
+      <div class="chart-desc"><details><summary>Confucian (CC5) and Islamic (CC4) items dominate the divergence list.</summary>Items with the highest cross-model variance, showing provider-level responses. Relational moral reasoning is where models diverge most and where WEIRD bias is most consequential. Per-provider columns show the mean response within that provider.</details></div>
+      <div class="scroll-box" id="divTableBox"></div>
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /comparePane -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- COUNCIL ANALYSIS TAB                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="tab-pane fade" id="councilPane" role="tabpanel">
+
+<div class="tab-intro">
+  <strong>12-Member Expert Council Analysis: Cross-Provider Benchmark Methodology.</strong>
+  This tab presents the findings of a 12-member expert council (6 tradition specialists and 6 methodological specialists) who analyzed how 10 cross-cultural AI ethics benchmarks were administered across 3 LLM providers: Anthropic (Claude), Google (Gemini), and OpenAI (GPT). The council established a <strong>3-tier provenance framework</strong>: <em>Tier 1 &mdash; Authentic</em> (direct API responses from 3 Claude models showing genuinely differentiated behavior), <em>Tier 2 &mdash; Codex-Authored</em> (2 GPT models whose responses were generated by OpenAI Codex rather than the target models), and <em>Tier 3 &mdash; Simulated</em> (5 Gemini models with template-derived responses producing identical metrics). The central finding: despite 10 nominal models, the <strong>effective independent N is approximately 5</strong>, and all providers converge on Western liberal values as measured by Moral Foundations Theory &mdash; every model is closest to Germany and farthest from Saudi Arabia.
+  <div class="council-tag">Expert Council Interpretation &mdash; Full 12-Member Panel</div>
+</div>
+
+<!-- KPI cards -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Effective Independent Models</div>
+      <div class="stat-value">&asymp;5</div>
+      <div class="stat-sub">of 10 nominal</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Providers Analyzed</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub">Anthropic &middot; Google &middot; OpenAI</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Total Item Responses</div>
+      <div class="stat-value">3,800</div>
+      <div class="stat-sub">1,140 independent</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Council Confidence</div>
+      <div class="stat-value" style="color: var(--accent3);">Low-Med</div>
+      <div class="stat-sub">Provenance limits validity</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="chart-desc"><strong>Understanding the KPI cards above.</strong> &ldquo;Effective Independent Models&rdquo; counts only models that produce genuinely differentiated responses &mdash; the 3 Claude models (fully independent), plus GPT-5.4 and GPT-5.4-Mini (partially independent via Codex authorship). The 5 Gemini models are excluded because they produce identical MFQ profiles, RLHF conflict counts, and response lengths, contributing zero additional information. &ldquo;Council Confidence&rdquo; is rated Low-Medium because provenance issues (70% of models are either simulated or Codex-authored) undermine the statistical power and interpretive validity of cross-provider comparisons. The 3,800 total responses (380 items &times; 10 models) reduce to approximately 1,140 independent observations (380 &times; 3 authentic Claude models) when provenance quality is respected.</div>
+
+<!-- Row 1: MFQ by Provider + Provenance Quality -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">MFQ Profile by Provider</div>
+      <div class="chart-desc"><details><summary>All providers share the same structural bias: high Care/Fairness, low binding foundations.</summary><strong>What you see.</strong> This grouped bar chart shows how each provider&rsquo;s models score on the 5 Moral Foundations from Jonathan Haidt&rsquo;s Moral Foundations Theory: Care/Harm, Fairness/Cheating (together called &ldquo;individualizing&rdquo; foundations), and Loyalty/Betrayal, Authority/Subversion, Sanctity/Degradation (&ldquo;binding&rdquo; foundations). Scores are averaged across models within each provider. <strong>Why it matters.</strong> The Individualizing/Binding (I/B) ratio is a key indicator of WEIRD bias &mdash; Western populations typically show high individualizing and low binding scores. Anthropic models show the widest within-provider variation (MFQ ratio 3.23&ndash;4.82), while all 5 Gemini models produce identical scores (ratio 3.75), visually confirming the simulation problem. OpenAI GPT-5.4 has the lowest I/B ratio (2.48) &mdash; the most balanced moral profile &mdash; but this may reflect Codex authorship patterns rather than GPT&rsquo;s actual alignment training. <strong>Key conclusion.</strong> No provider escapes the Western liberal value orientation embedded through RLHF training (Haidt &amp; Graham, 2007).</details></div>
+      <div id="chartCouncilMFQ" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Data Provenance Quality</div>
+      <div class="chart-desc"><details><summary>Only 3 of 10 models (30%) provide authentic cross-cultural benchmark data.</summary><strong>What you see.</strong> Each horizontal bar represents one of the 10 models, colored by provenance tier. <span style="color:#0072B2;">&marker; Blue = Tier 1 (Authentic)</span>: direct API responses from Claude Opus, Sonnet, and Haiku &mdash; genuine model behavior with measurable differentiation. <span style="color:#CC79A7;">&marker; Mauve = Tier 2 (Codex-Authored)</span>: GPT-5.4 and GPT-5.4-Mini responses generated through OpenAI Codex offline agents &mdash; may reflect Codex&rsquo;s value patterns rather than the target model&rsquo;s alignment training. <span style="color:#E69F00;">&marker; Amber = Tier 3 (Simulated)</span>: 5 Gemini models with template-derived responses &mdash; identical MFQ profiles (ratio 3.75), RLHF conflict counts (277), and mean response lengths (389.9 chars) confirm these are not independent observations. <strong>Key conclusion.</strong> Reporting N=10 without provenance disclosure would be methodologically misleading. The provenance hierarchy must be disclosed in any publication citing these results.</details></div>
+      <div id="chartProvenance" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Row 2: Response Length Heatmap + RLHF Radar -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Response Length Heatmap (10 Trials &times; 10 Models)</div>
+      <div class="chart-desc"><details><summary>The &ldquo;clone stripe&rdquo; provides irrefutable visual proof that 5 Gemini models are one data point.</summary>This heatmap shows mean response length (in characters) for each combination of 10 benchmark trials (x-axis) and 10 models (y-axis). All 5 Gemini rows are identical pixel-for-pixel to the Claude Opus row. Qualitative trials (CC6&ndash;CC10) produce responses 5&ndash;10&times; longer than numeric Likert-scale trials (CC1&ndash;CC5). Sonnet consistently produces the longest responses across all trials (mean 519 chars), suggesting greater elaborative engagement with ethical content.</details></div>
+      <div id="chartCouncilHeatmap" class="chart-box" style="height:420px;"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">RLHF Conflict Themes by Provider</div>
+      <div class="chart-desc"><details><summary>All providers share the same dominant conflict signature: individual autonomy leads.</summary>This radar chart shows how frequently each provider&rsquo;s models exhibit RLHF-trained value conflicts with non-Western ethical frameworks. The 6 conflict themes are: <em>Individual Autonomy Default</em> (clashes with Ubuntu/Confucian role ethics), <em>Secular Epistemology</em> (clashes with Islamic tawhid/Buddhist prajna), <em>Consequentialist Optimization</em> (clashes with Islamic fiqh/Confucian li), <em>Anti-Authority Bias</em> (clashes with Confucian xiao/Islamic ulema), <em>Gender Equality Lock</em> (clashes with Islamic complementarity), and <em>Harm Principle Absolutism</em> (clashes with sanctity/purity concerns). All providers share the same dominant conflict signature, suggesting RLHF training pipelines industry-wide draw from similar Western-liberal annotator pools.</details></div>
+      <div id="chartCouncilRLHF" class="chart-box"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Row 3: Engagement Depth + Hard Cases -->
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Engagement Depth by Tradition &times; Provider</div>
+      <div class="chart-desc"><details><summary>Most models score 1.0 (surface-level) on most traditions; rare 4.0 scores suggest emergent capability.</summary>Engagement depth is scored on a 1&ndash;4 scale: 1.0 = surface-level, 2.0 = basic familiarity, 3.0 = substantive engagement, 4.0 = deep perspective-taking. The rare exceptions are revealing: Claude Sonnet achieves 4.0 on Ubuntu, Claude Haiku achieves 4.0 on Dharmic traditions, and GPT-5.4 scores 3.0 on Buddhist and Dharmic frameworks. Haiku&rsquo;s Dharmic 4.0 versus Opus&rsquo;s 1.0 suggests that cultural competence may be an artifact of specific training data, not general intelligence.</details></div>
+      <div id="chartCouncilEngage" class="chart-box"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Highest-Variance Items (Cross-Model &ldquo;Hard Cases&rdquo;)</div>
+      <div class="chart-desc"><details><summary>The hardest items involve relational moral reasoning &mdash; where WEIRD bias is most consequential.</summary>This table lists the 10 benchmark items where models disagree most, ranked by cross-model variance. CC5 item 26 (Confucian friendship ethics) has the highest variance (1.41). The concentration of high-variance items in CC4 (Islamic: 5/10) and CC5 (Confucian: 4/10) reveals that relational moral obligations (friendship loyalty, filial piety, religious prohibition) are where models diverge most. RLHF-trained models cannot resolve Confucian wu-lun dilemmas without defaulting to Western individualism. The Islamic items all involve Maqasid al-Shariah categories where Islamic and Western frameworks offer genuinely incompatible prescriptions.</details></div>
+      <div class="scroll-box" id="councilHardCaseBox" style="max-height:none;"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Council Recommendations -->
+<div class="row g-3 mb-3">
+  <div class="col-12">
+    <div class="card"><div class="card-body">
+      <div class="section-label">Council Recommendations</div>
+      <div class="chart-desc"><strong>Unanimous and near-unanimous recommendations from the 12-member panel.</strong> After reviewing the evidence above, the council voted on 6 methodological recommendations. <strong>R1 &mdash; Replace Simulated Data (12/12 unanimous):</strong> All 5 Gemini models must be re-tested via actual Gemini API calls. Template-derived data is scientifically unusable for cross-model comparison. <strong>R2 &mdash; Replace Codex-Authored Data (11/12):</strong> GPT-5.4 and GPT-5.4-Mini trials should be re-administered through OpenAI&rsquo;s API directly, not through Codex code generation. One dissent noted that Codex-authored data retains research value for studying generation-based evaluation paradigms, even if it does not reflect the target model&rsquo;s alignment. <strong>R3 &mdash; Expand to Non-English Prompts (12/12):</strong> All 10 benchmarks were administered in English only; non-Western moral reasoning may differ substantially in the tradition&rsquo;s native language. <strong>R4 &mdash; Report Effective N in All Publications (12/12):</strong> Any publication citing this data must report the effective independent N (&asymp;5), not the nominal N (10). <strong>R5 &mdash; Include Non-WEIRD Human Baselines (12/12):</strong> Current country baselines from WVS/Pew should be supplemented with direct comparison to human respondents from non-Western moral traditions. <strong>R6 &mdash; Community Consent for Indigenous Benchmark Items (12/12):</strong> Any use of Indigenous values in benchmark items requires community co-design and governance under CARE principles.</div>
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /councilPane -->
+
+</div><!-- /tab-content -->
+
+<!-- Cross-tab narrative footer -->
+<div class="card mt-3 mb-3">
+  <div class="card-body">
+    <div class="section-label">Reading This Dashboard: A Guide to the Four Tabs</div>
+    <div class="chart-desc" style="border-left-color: var(--accent2);">
+      <strong>How to read across all four tabs.</strong>
+      This dashboard tells a single story in four chapters. <strong>Tab 1 (Benchmarks)</strong> establishes the landscape: of 218 AI values alignment benchmarks, the vast majority measure Western moral constructs while non-Western traditions remain unmeasured. <strong>Tab 2 (Trial Results)</strong> shows per-trial difficulty analysis &mdash; relational moral reasoning trials produce the highest cross-model disagreement. <strong>Tab 3 (Cross-Provider Comparison)</strong> compares 6 representative models on MFQ profiles, cultural distance, and RLHF conflicts. <strong>Tab 4 (Council Analysis)</strong> presents the expert council&rsquo;s methodology critique, establishing a 3-tier provenance framework and concluding that effective N &asymp; 5, not 10.
+    </div>
+    <div class="chart-desc" style="border-left-color: var(--accent3); margin-top: 0.8rem; font-style: italic;">
+      This dashboard employs Western data visualization conventions to communicate its findings. The irony of using monocultural design to critique monocultural AI is acknowledged. Future versions should explore culturally responsive visualization approaches.
+    </div>
+  </div>
+</div>
+</div><!-- /container -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="benchmark-data-v2.js"></script>
+<script>
+(function() {
+  "use strict";
+
+  // ── Data (inlined from Python) ──────────────────────────────────────────
+  var OI = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"];
+  var TRADITION = {"confucian": 30, "ubuntu": 5, "islamic": 6, "buddhist": 13, "dharmic": 4, "indigenous": 6, "buen_vivir": 2};
+  var SCOPE = {"monocultural": 48, "bicultural": 54, "multicultural": 75, "pancultural": 8, "universal_claim": 33};
+  var GEO = {"North America": 86, "East Asia": 42, "Western Europe": 35, "South Asia": 18, "Unknown": 10, "MENA": 9, "Southeast Asia": 7, "Oceania": 5, "Latin America": 3, "Sub-Saharan Africa": 2, "Eastern Europe": 1};
+  var PSYCH_SCOPE = {"Bicultural/Limited": {"reliability_only": 24, "invariance": 0, "neither": 37, "total": 61}, "Mono/Single": {"reliability_only": 12, "invariance": 0, "neither": 29, "total": 41}, "Multicultural": {"reliability_only": 14, "invariance": 0, "neither": 61, "total": 75}, "Cross-cultural/Global": {"reliability_only": 13, "invariance": 0, "neither": 28, "total": 41}};
+  var DATA_AVAIL = {"open_source": 145, "restricted": 4, "unavailable": 69};
+  var MFQ = {"care": 4.67, "fairness": 4.83, "loyalty": 2.0, "authority": 1.33, "sanctity": 0.4};
+  var RLHF = [{"category": "Cultural bias", "frequency": 14}, {"category": "Non-Western values", "frequency": 12}, {"category": "Moral dilemmas", "frequency": 11}, {"category": "Confucian values", "frequency": 8}, {"category": "Islamic ethics", "frequency": 4}, {"category": "Indigenous knowledge", "frequency": 2}, {"category": "Dharmic traditions", "frequency": 2}, {"category": "Ubuntu philosophy", "frequency": 1}];
+  var ALIGNMENT = {"distances": {"US": 0.884, "China": 1.332, "India": 1.56, "Nigeria": 1.76, "Brazil": 1.062, "Saudi_Arabia": 1.974, "Japan": 0.99, "Germany": 0.538}, "closest": "Germany", "furthest": "Saudi_Arabia", "items_used": 50};
+  var ENGAGEMENT = [{"trial_id": "CC4", "tradition": "Islamic", "items": 40, "depth_score": 4, "benchmark": "IslamTrust"}, {"trial_id": "CC5", "tradition": "Confucian", "items": 30, "depth_score": 3, "benchmark": "Confucian Relational Dilemmas"}, {"trial_id": "CC6", "tradition": "Ubuntu", "items": 30, "depth_score": 3, "benchmark": "Ubuntu Communal Ethics Scenarios"}, {"trial_id": "CC7", "tradition": "Buddhist", "items": 30, "depth_score": 3, "benchmark": "Buddhist Ethics Scenarios"}, {"trial_id": "CC9", "tradition": "Dharmic", "items": 30, "depth_score": 3, "benchmark": "Dharmic Ethics Scenarios"}];
+
+  // ── Helpers ─────────────────────────────────────────────────────────────
+  var txtC = "#e6edf3";
+  var txtS = "#8b949e";
+  var gridC = "#30363d";
+
+  function initChart(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    return echarts.init(el, null, {renderer: "canvas"});
+  }
+
+  // ── 1. Tradition Coverage Bar ───────────────────────────────────────────
+  (function() {
+    var ch = initChart("chartTradition");
+    if (!ch) return;
+    var labels = ["Confucian", "Buddhist", "Islamic", "Indigenous", "Ubuntu", "Dharmic", "Buen Vivir"];
+    var keys = ["confucian", "buddhist", "islamic", "indigenous", "ubuntu", "dharmic", "buen_vivir"];
+    var vals = keys.map(function(k) { return TRADITION[k] || 0; });
+    ch.setOption({
+      tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+      grid: {left: 20, right: 30, top: 20, bottom: 40, containLabel: true},
+      xAxis: {
+        type: "category", data: labels,
+        axisLabel: {color: txtS, fontSize: 11, rotate: 15},
+        axisLine: {lineStyle: {color: gridC}}
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: {color: txtS},
+        splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+      },
+      series: [{
+        type: "bar", data: vals,
+        itemStyle: {
+          color: function(p) { return OI[p.dataIndex % OI.length]; },
+          borderRadius: [4, 4, 0, 0]
+        },
+        barMaxWidth: 50,
+        label: {show: true, position: "top", color: txtC, fontSize: 12, fontWeight: 600}
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 2. Cultural Scope Pie ───────────────────────────────────────────────
+  (function() {
+    var ch = initChart("chartScope");
+    if (!ch) return;
+    var nameMap = {
+      monocultural: "Monocultural",
+      bicultural: "Bicultural",
+      multicultural: "Multicultural",
+      pancultural: "Pancultural",
+      universal_claim: "Universal Claim"
+    };
+    var pieData = [];
+    Object.keys(SCOPE).forEach(function(k) {
+      pieData.push({name: nameMap[k] || k, value: SCOPE[k]});
+    });
+    ch.setOption({
+      tooltip: {trigger: "item", formatter: "{b}: {c} ({d}%)"},
+      legend: {
+        bottom: 10, textStyle: {color: txtS, fontSize: 11},
+        itemWidth: 12, itemHeight: 12
+      },
+      series: [{
+        type: "pie", radius: ["35%", "65%"], center: ["50%", "45%"],
+        data: pieData,
+        color: OI,
+        label: {color: txtC, fontSize: 11},
+        emphasis: {itemStyle: {shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)"}}
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 3. Geographic Bar (horizontal) ──────────────────────────────────────
+  (function() {
+    var ch = initChart("chartGeo");
+    if (!ch) return;
+    var sorted = Object.keys(GEO).map(function(k) { return {name: k, val: GEO[k]}; });
+    sorted.sort(function(a, b) { return a.val - b.val; });
+    // Take top 10
+    sorted = sorted.slice(Math.max(0, sorted.length - 10));
+    ch.setOption({
+      tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+      grid: {left: 10, right: 40, top: 10, bottom: 20, containLabel: true},
+      yAxis: {
+        type: "category",
+        data: sorted.map(function(d) { return d.name; }),
+        axisLabel: {color: txtS, fontSize: 11},
+        axisLine: {lineStyle: {color: gridC}}
+      },
+      xAxis: {
+        type: "value",
+        axisLabel: {color: txtS},
+        splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+      },
+      series: [{
+        type: "bar", data: sorted.map(function(d) { return d.val; }),
+        itemStyle: {color: OI[1], borderRadius: [0, 4, 4, 0]},
+        barMaxWidth: 28,
+        label: {show: true, position: "right", color: txtC, fontSize: 11}
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 4. Psychometric Quality Stacked Bar ─────────────────────────────────
+  (function() {
+    var ch = initChart("chartPsych");
+    if (!ch) return;
+    var tiers = Object.keys(PSYCH_SCOPE);
+    var relData = [], invData = [], neiData = [];
+    tiers.forEach(function(t) {
+      var d = PSYCH_SCOPE[t];
+      relData.push(d.reliability_only);
+      invData.push(d.invariance);
+      neiData.push(d.neither);
+    });
+    ch.setOption({
+      tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+      legend: {
+        data: ["Reliability Only", "Invariance Tested", "Neither"],
+        bottom: 10, textStyle: {color: txtS, fontSize: 11},
+        itemWidth: 12, itemHeight: 12
+      },
+      grid: {left: 10, right: 30, top: 20, bottom: 55, containLabel: true},
+      xAxis: {
+        type: "category", data: tiers,
+        axisLabel: {color: txtS, fontSize: 10, rotate: 10},
+        axisLine: {lineStyle: {color: gridC}}
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: {color: txtS},
+        splitLine: {lineStyle: {color: gridC, type: "dashed"}}
+      },
+      series: [
+        {name: "Reliability Only", type: "bar", stack: "q", data: relData, itemStyle: {color: OI[0]}},
+        {name: "Invariance Tested", type: "bar", stack: "q", data: invData, itemStyle: {color: OI[2]}},
+        {name: "Neither", type: "bar", stack: "q", data: neiData, itemStyle: {color: "#484f58"}}
+      ]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 5. Gap Radar ────────────────────────────────────────────────────────
+  (function() {
+    var ch = initChart("chartRadar");
+    if (!ch) return;
+    var maxVal = 0;
+    Object.keys(TRADITION).forEach(function(k) {
+      if (TRADITION[k] > maxVal) maxVal = TRADITION[k];
+    });
+    if (maxVal === 0) maxVal = 1;
+    var indicators = [];
+    var vals = [];
+    var labels = {
+      confucian: "Confucian", buddhist: "Buddhist", islamic: "Islamic",
+      indigenous: "Indigenous", ubuntu: "Ubuntu", dharmic: "Dharmic",
+      buen_vivir: "Buen Vivir"
+    };
+    Object.keys(labels).forEach(function(k) {
+      indicators.push({name: labels[k], max: 100});
+      vals.push(Math.round(100 * (TRADITION[k] || 0) / maxVal));
+    });
+    ch.setOption({
+      tooltip: {},
+      radar: {
+        indicator: indicators,
+        shape: "circle",
+        axisName: {color: txtS, fontSize: 11},
+        splitArea: {areaStyle: {color: ["rgba(88,166,255,0.02)", "rgba(88,166,255,0.05)"]}},
+        splitLine: {lineStyle: {color: gridC}},
+        axisLine: {lineStyle: {color: gridC}}
+      },
+      series: [{
+        type: "radar",
+        data: [{
+          value: vals,
+          name: "Coverage %",
+          areaStyle: {color: "rgba(88,166,255,0.15)"},
+          lineStyle: {color: OI[4], width: 2},
+          itemStyle: {color: OI[4]}
+        }]
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 6. Data Availability Donut ──────────────────────────────────────────
+  (function() {
+    var ch = initChart("chartData");
+    if (!ch) return;
+    var items = [
+      {name: "Open Source", value: DATA_AVAIL.open_source},
+      {name: "Restricted", value: DATA_AVAIL.restricted},
+      {name: "Unavailable", value: DATA_AVAIL.unavailable}
+    ];
+    ch.setOption({
+      tooltip: {trigger: "item", formatter: "{b}: {c} ({d}%)"},
+      legend: {
+        bottom: 10, textStyle: {color: txtS, fontSize: 11},
+        itemWidth: 12, itemHeight: 12
+      },
+      series: [{
+        type: "pie", radius: ["40%", "68%"], center: ["50%", "43%"],
+        data: items,
+        color: [OI[2], OI[0], "#484f58"],
+        label: {
+          color: txtC, fontSize: 12,
+          formatter: "{b}\n{c}"
+        },
+        emphasis: {itemStyle: {shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)"}}
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 7. MFQ by Provider (Grouped Bar) ────────────────────────────────────
+  (function() {
+    var ch = initChart("chartMFQ");
+    if (!ch) return;
+    var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+    var founds = ["Care_Harm", "Fairness_Cheating", "Loyalty_Betrayal", "Authority_Subversion", "Sanctity_Degradation"];
+    var fLabels = ["Care", "Fairness", "Loyalty", "Authority", "Sanctity"];
+    var usLib = [3.8, 3.8, 2.3, 2.1, 1.3];
+    var usCon = [3.1, 3.0, 3.2, 3.3, 2.9];
+    // Use provider-averaged data from council if available, else fall back to Opus
+    if (typeof COUNCIL_MFQ_PROVIDER !== "undefined") {
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var provLabels = ["Anthropic (T1)", "Google (T3)", "OpenAI (T2)"];
+      var series = providers.map(function(p, pi) {
+        var d = COUNCIL_MFQ_PROVIDER[p] || {};
+        return {
+          name: provLabels[pi], type: "bar",
+          data: founds.map(function(f) { return d[f] || 0; }),
+          itemStyle: {color: pC[p] || "#8b949e", borderRadius: [3,3,0,0]},
+          barGap: "10%"
+        };
+      });
+      series.push({name: "US Liberal", type: "line", data: usLib, lineStyle: {color: "#8b949e", type: "dashed"}, symbol: "diamond", symbolSize: 6, itemStyle: {color: "#8b949e"}});
+      series.push({name: "US Conservative", type: "line", data: usCon, lineStyle: {color: "#484f58", type: "dashed"}, symbol: "triangle", symbolSize: 6, itemStyle: {color: "#484f58"}});
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {
+          data: provLabels.concat(["US Liberal", "US Conservative"]),
+          bottom: 5, textStyle: {color: txtS, fontSize: 10}, itemWidth: 12, itemHeight: 12
+        },
+        grid: {left: 10, right: 20, top: 20, bottom: 55, containLabel: true},
+        xAxis: {type: "category", data: fLabels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "value", max: 5.5, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: series
+      });
+    } else {
+      // Fallback: single Opus
+      var claudeVals = ["care","fairness","loyalty","authority","sanctity"].map(function(k) { return MFQ[k] || 0; });
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {data: ["Claude Opus 4.6", "US Liberal", "US Conservative"], bottom: 5, textStyle: {color: txtS, fontSize: 10}, itemWidth: 12, itemHeight: 12},
+        grid: {left: 10, right: 20, top: 20, bottom: 55, containLabel: true},
+        xAxis: {type: "category", data: fLabels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "value", max: 5.5, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: [
+          {name: "Claude Opus 4.6", type: "bar", data: claudeVals, itemStyle: {color: OI[4], borderRadius: [3,3,0,0]}, barGap: "15%"},
+          {name: "US Liberal", type: "line", data: usLib, lineStyle: {color: "#8b949e", type: "dashed"}, symbol: "diamond", symbolSize: 6, itemStyle: {color: "#8b949e"}},
+          {name: "US Conservative", type: "line", data: usCon, lineStyle: {color: "#484f58", type: "dashed"}, symbol: "triangle", symbolSize: 6, itemStyle: {color: "#484f58"}}
+        ]
+      });
+    }
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 8. RLHF Conflict Radar by Provider ─────────────────────────────────
+  (function() {
+    var ch = initChart("chartRLHF");
+    if (!ch) return;
+    var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+    if (typeof COUNCIL_RLHF_RADAR !== "undefined") {
+      var rd = COUNCIL_RLHF_RADAR;
+      var labels = rd.theme_labels || [];
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var allVals = [];
+      providers.forEach(function(p) {
+        var pdata = (rd.providers || {})[p] || {};
+        (rd.themes || []).forEach(function(t) { allVals.push(pdata[t] || 0); });
+      });
+      var radarMax = Math.ceil(Math.max.apply(null, allVals) * 1.2 / 10) * 10 || 100;
+      var indicator = labels.map(function(l) { return {name: l, max: radarMax}; });
+      var series_data = providers.map(function(p) {
+        var pdata = (rd.providers || {})[p] || {};
+        return {
+          name: p, value: (rd.themes || []).map(function(t) { return pdata[t] || 0; }),
+          itemStyle: {color: pC[p] || "#8b949e"}, areaStyle: {opacity: 0.15}, lineStyle: {width: 2}
+        };
+      });
+      ch.setOption({
+        tooltip: {trigger: "item"},
+        legend: {data: providers, textStyle: {color: txtS}, top: 0},
+        radar: {
+          indicator: indicator, shape: "polygon",
+          axisName: {color: txtS, fontSize: 10},
+          splitLine: {lineStyle: {color: gridC}},
+          splitArea: {areaStyle: {color: ["transparent"]}},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        series: [{type: "radar", data: series_data}]
+      });
+    } else {
+      // Fallback: single Opus horizontal bar
+      var sorted = RLHF.slice().sort(function(a, b) { return a.frequency - b.frequency; });
+      sorted = sorted.slice(Math.max(0, sorted.length - 5));
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        grid: {left: 10, right: 40, top: 10, bottom: 20, containLabel: true},
+        yAxis: {type: "category", data: sorted.map(function(d) { return d.category; }), axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        xAxis: {type: "value", axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: [{type: "bar", data: sorted.map(function(d) { return d.frequency; }), itemStyle: {color: OI[5], borderRadius: [0,4,4,0]}, barMaxWidth: 28, label: {show: true, position: "right", color: txtC, fontSize: 11}}]
+      });
+    }
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 9. Cultural Alignment Radar by Provider ─────────────────────────────
+  (function() {
+    var ch = initChart("chartAlign");
+    if (!ch) return;
+    var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+    var countries = ["US", "Germany", "Japan", "Brazil", "India", "China", "Nigeria", "Saudi_Arabia"];
+    var cLabels = {US: "United States", Germany: "Germany", Japan: "Japan", Brazil: "Brazil", India: "India", China: "China", Nigeria: "Nigeria", Saudi_Arabia: "Saudi Arabia"};
+    if (typeof COUNCIL_ALIGNMENT_PROVIDER !== "undefined") {
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var maxD = 0;
+      providers.forEach(function(p) {
+        var pd = COUNCIL_ALIGNMENT_PROVIDER[p] || {};
+        countries.forEach(function(c) { if (pd[c] != null && pd[c] > maxD) maxD = pd[c]; });
+      });
+      if (maxD === 0) maxD = 2;
+      var indicators = countries.map(function(c) { return {name: cLabels[c] || c, max: Math.ceil(maxD * 1.2 * 10) / 10}; });
+      var areaAlpha = {"Anthropic": "rgba(0,114,178,0.08)", "Google": "rgba(230,159,0,0.08)", "OpenAI": "rgba(204,121,167,0.08)"};
+      var series_data = providers.map(function(p) {
+        var pd = COUNCIL_ALIGNMENT_PROVIDER[p] || {};
+        return {
+          value: countries.map(function(c) { return pd[c] != null ? Math.round(pd[c] * 1000) / 1000 : 0; }),
+          name: p,
+          lineStyle: {color: pC[p] || "#8b949e", width: 2},
+          itemStyle: {color: pC[p] || "#8b949e"},
+          areaStyle: {color: areaAlpha[p] || "rgba(128,128,128,0.08)"}
+        };
+      });
+      ch.setOption({
+        tooltip: {},
+        legend: {data: providers, bottom: 10, textStyle: {color: txtS, fontSize: 11}, itemWidth: 12, itemHeight: 12},
+        radar: {
+          indicator: indicators, shape: "circle",
+          axisName: {color: txtS, fontSize: 10},
+          splitArea: {areaStyle: {color: ["rgba(88,166,255,0.02)", "rgba(88,166,255,0.05)"]}},
+          splitLine: {lineStyle: {color: gridC}},
+          axisLine: {lineStyle: {color: gridC}}
+        },
+        series: [{type: "radar", data: series_data}]
+      });
+    } else {
+      // Fallback: single Opus
+      var distances = ALIGNMENT.distances;
+      var maxDist = 0;
+      Object.keys(distances).forEach(function(k) { if (distances[k] > maxDist) maxDist = distances[k]; });
+      if (maxDist === 0) maxDist = 5;
+      var indicators = countries.map(function(c) { return {name: cLabels[c] || c, max: Math.ceil(maxDist * 1.1 * 10) / 10}; });
+      var simVals = countries.map(function(c) { return Math.round((maxDist - (distances[c] || 0)) * 100) / 100; });
+      ch.setOption({
+        tooltip: {},
+        radar: {indicator: indicators, shape: "circle", axisName: {color: txtS, fontSize: 10}, splitArea: {areaStyle: {color: ["rgba(88,166,255,0.02)", "rgba(88,166,255,0.05)"]}}, splitLine: {lineStyle: {color: gridC}}, axisLine: {lineStyle: {color: gridC}}},
+        series: [{type: "radar", data: [{value: simVals, name: "Claude Similarity", areaStyle: {color: "rgba(0,114,178,0.15)"}, lineStyle: {color: OI[2], width: 2}, itemStyle: {color: OI[2]}}]}]
+      });
+    }
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── 10. Tradition Engagement by Provider ────────────────────────────────
+  (function() {
+    var ch = initChart("chartEngage");
+    if (!ch) return;
+    var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+    if (typeof COUNCIL_ENGAGEMENT !== "undefined") {
+      var ed = COUNCIL_ENGAGEMENT;
+      var traditions = ed.traditions || [];
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var series = providers.map(function(p) {
+        var pdata = (ed.providers || {})[p] || {};
+        return {
+          name: p, type: "bar",
+          data: traditions.map(function(t) { return pdata[t] || 0; }),
+          itemStyle: {color: pC[p] || "#8b949e"},
+          barGap: "10%",
+          label: {show: true, position: "top", color: txtC, fontSize: 10,
+                  formatter: function(p) { return p.value > 0 ? p.value.toFixed(1) : ""; }}
+        };
+      });
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {data: providers, textStyle: {color: txtS}, top: 0},
+        grid: {left: 10, right: 20, top: 50, bottom: 30, containLabel: true},
+        xAxis: {type: "category", data: traditions, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "value", max: 4, min: 0, axisLabel: {color: txtS, formatter: function(v) { return ["", "Surface", "Basic", "Substantive", "Deep"][v] || v; }}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: series
+      });
+    } else {
+      // Fallback: single Opus
+      var labels = ENGAGEMENT.map(function(d) { return d.tradition; });
+      var depths = ENGAGEMENT.map(function(d) { return d.depth_score; });
+      ch.setOption({
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        grid: {left: 10, right: 30, top: 20, bottom: 30, containLabel: true},
+        xAxis: {type: "category", data: labels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "value", max: 5, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: [{type: "bar", data: depths, itemStyle: {color: function(p) { return OI[p.dataIndex % OI.length]; }, borderRadius: [4,4,0,0]}, barMaxWidth: 50, label: {show: true, position: "top", color: txtC, fontSize: 13, fontWeight: 600, formatter: "{c}/4"}}]
+      });
+    }
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ── NEW Tab 2 Charts: Trial Difficulty + Trial Types ─────────────────
+  // Trial Difficulty — horizontal bar chart showing per-trial variance
+  (function() {
+    var ch = initChart("chartTrialDifficulty");
+    if (!ch || typeof COUNCIL_HARD_CASES === "undefined") return;
+    var trialVar = {};
+    COUNCIL_HARD_CASES.forEach(function(d) {
+      if (!trialVar[d.trial]) trialVar[d.trial] = [];
+      trialVar[d.trial].push(d.variance);
+    });
+    var trials = Object.keys(trialVar).sort();
+    var meanVars = trials.map(function(t) {
+      var vals = trialVar[t];
+      return Math.round(vals.reduce(function(a,b){ return a+b; }, 0) / vals.length * 100) / 100;
+    });
+    ch.setOption({
+      tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+      grid: {left: 10, right: 40, top: 10, bottom: 20, containLabel: true},
+      yAxis: {type: "category", data: trials, inverse: true, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+      xAxis: {type: "value", axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+      series: [{
+        type: "bar",
+        data: meanVars.map(function(v) {
+          return {value: v, itemStyle: {color: v > 0.8 ? "#E69F00" : v > 0.5 ? "#0072B2" : "#56B4E9", borderRadius: [0,4,4,0]}};
+        }),
+        barMaxWidth: 28,
+        label: {show: true, position: "right", color: txtC, fontSize: 11}
+      }]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // Trial Types — grouped bar comparing numeric vs qualitative
+  (function() {
+    var ch = initChart("chartTrialTypes");
+    if (!ch || typeof TRIAL_SUMMARY === "undefined") return;
+    var numTrials = TRIAL_SUMMARY.filter(function(t) { return t.items >= 38; });
+    var qualTrials = TRIAL_SUMMARY.filter(function(t) { return t.items < 38; });
+    var numAvgItems = numTrials.length > 0 ? Math.round(numTrials.reduce(function(a,t){ return a+t.items; }, 0) / numTrials.length) : 0;
+    var qualAvgItems = qualTrials.length > 0 ? Math.round(qualTrials.reduce(function(a,t){ return a+t.items; }, 0) / qualTrials.length) : 0;
+    ch.setOption({
+      tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+      legend: {data: ["Numeric (CC1-CC5)", "Qualitative (CC6-CC10)"], textStyle: {color: txtS}, top: 0},
+      grid: {left: 10, right: 20, top: 40, bottom: 30, containLabel: true},
+      xAxis: {type: "category", data: ["Trials", "Avg Items/Trial"], axisLabel: {color: txtS}, axisLine: {lineStyle: {color: gridC}}},
+      yAxis: {type: "value", axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+      series: [
+        {name: "Numeric (CC1-CC5)", type: "bar", data: [numTrials.length, numAvgItems], itemStyle: {color: "#0072B2", borderRadius: [3,3,0,0]}, barGap: "20%"},
+        {name: "Qualitative (CC6-CC10)", type: "bar", data: [qualTrials.length, qualAvgItems], itemStyle: {color: "#E69F00", borderRadius: [3,3,0,0]}}
+      ]
+    });
+    window.addEventListener("resize", function() { ch.resize(); });
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // MODEL COMPARISON CHARTS
+  // ═══════════════════════════════════════════════════════════════════════
+  if (typeof MULTIMODEL_AVAILABLE !== "undefined" && MULTIMODEL_AVAILABLE) {
+
+    var MC = typeof MODEL_COLORS !== "undefined" ? MODEL_COLORS : {};
+    var opusC = MC.opus || "#0072B2";
+    var sonnetC = MC.sonnet || "#009E73";
+    var haikuC = MC.haiku || "#E69F00";
+
+    // KPI: Pearson r
+    if (typeof MULTIMODEL_AGREEMENT !== "undefined") {
+      var osR = (MULTIMODEL_AGREEMENT.opus_vs_sonnet || {}).overall || {};
+      var el = document.getElementById("kpiR");
+      if (el && osR.pearson_r != null) el.textContent = osR.pearson_r.toFixed(3);
+    }
+    // KPI: MFQ ratio range (use all 10 models if available, else 3 Claude)
+    var ratioSrc = typeof ALL_MODEL_RATIOS !== "undefined" ? ALL_MODEL_RATIOS : (typeof MULTIMODEL_RATIOS !== "undefined" ? MULTIMODEL_RATIOS : {});
+    var rats = Object.values(ratioSrc).filter(function(v) { return v != null; });
+    var el2 = document.getElementById("kpiRatio");
+    if (el2 && rats.length > 0) {
+      el2.textContent = Math.min.apply(null, rats).toFixed(1) + "–" + Math.max.apply(null, rats).toFixed(1);
+    }
+
+    // ── 11. MFQ 6-Representative-Model Comparison ───────────────────
+    (function() {
+      var ch = initChart("chartMFQCompare");
+      if (!ch) return;
+      var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+      var MC10 = typeof MODEL_COLORS_10 !== "undefined" ? MODEL_COLORS_10 : {};
+      var founds = ["Care_Harm", "Fairness_Cheating", "Loyalty_Betrayal", "Authority_Subversion", "Sanctity_Degradation"];
+      var fLabels = ["Care", "Fairness", "Loyalty", "Authority", "Sanctity"];
+      var usLib = [3.8, 3.8, 2.3, 2.1, 1.3];
+      var usCon = [3.1, 3.0, 3.2, 3.3, 2.9];
+      // 6 representative models: 3 Claude + 1 Gemini rep + 2 GPT
+      var repModels = [
+        {id: "claude-opus-4-6", label: "Opus", color: MC10["claude-opus-4-6"] || opusC},
+        {id: "claude-sonnet-4-6", label: "Sonnet", color: MC10["claude-sonnet-4-6"] || sonnetC},
+        {id: "claude-haiku-4-5", label: "Haiku", color: MC10["claude-haiku-4-5"] || haikuC},
+        {id: "gemini-2.5-flash", label: "Gemini ×5", color: pC.Google || "#E69F00"},
+        {id: "gpt-5.4", label: "GPT-5.4", color: MC10["gpt-5.4"] || "#CC79A7"},
+        {id: "gpt-5.4-mini", label: "GPT-5.4-Mini", color: MC10["gpt-5.4-mini"] || "#D99ABF"}
+      ];
+      // Try council per_model data first, fallback to multimodel MFQ
+      var pmAll = (typeof COUNCIL_PROVIDERS !== "undefined" && typeof COUNCIL_MFQ_PROVIDER !== "undefined");
+      var series = [];
+      if (typeof ALL_MODEL_RATIOS !== "undefined") {
+        // Use council_summary per_model data via COUNCIL_MFQ_PROVIDER foundations
+        // Build per-model data from council MFQ provider (need per-model, not per-provider)
+        // Actually use the multimodel MFQ foundation_scores if available for Claude, else approximate
+        var fs = (typeof MULTIMODEL_MFQ !== "undefined") ? (MULTIMODEL_MFQ.foundation_scores || {}) : {};
+        repModels.forEach(function(rm) {
+          // For Claude: use multimodel data if available
+          var shortKey = rm.id.replace("claude-", "").replace("-4-6", "").replace("-4-5", "");
+          var mdata = fs[shortKey];
+          if (!mdata && typeof COUNCIL_MFQ_PROVIDER !== "undefined") {
+            // For Gemini/GPT: use provider average
+            var prov = rm.id.indexOf("gemini") === 0 ? "Google" : (rm.id.indexOf("gpt") === 0 ? "OpenAI" : "Anthropic");
+            mdata = {};
+            var pd = COUNCIL_MFQ_PROVIDER[prov] || {};
+            founds.forEach(function(f) { mdata[f] = pd[f] || 0; });
+          }
+          var vals = founds.map(function(f) { return (mdata || {})[f] || 0; });
+          var sobj = {
+            name: rm.label, type: "bar", data: vals,
+            itemStyle: {color: rm.color, borderRadius: [3,3,0,0]},
+            barGap: "5%"
+          };
+          // ECharts decal patterns for provenance (Gemini=circle, GPT=hatched)
+          if (rm.id.indexOf("gemini") === 0) {
+            sobj.itemStyle.decal = {symbol: "circle", symbolSize: 1, dashArrayX: 5, dashArrayY: 5, color: "rgba(0,0,0,0.3)"};
+          } else if (rm.id.indexOf("gpt") === 0) {
+            sobj.itemStyle.decal = {symbol: "rect", symbolSize: 1, dashArrayX: [1, 4], rotation: 0.785, color: "rgba(0,0,0,0.3)"};
+          }
+          series.push(sobj);
+        });
+      }
+      series.push({name: "US Liberal", type: "line", data: usLib, lineStyle: {color: "#8b949e", type: "dashed"}, symbol: "diamond", symbolSize: 6, itemStyle: {color: "#8b949e"}});
+      series.push({name: "US Conservative", type: "line", data: usCon, lineStyle: {color: "#484f58", type: "dashed"}, symbol: "triangle", symbolSize: 6, itemStyle: {color: "#484f58"}});
+      ch.setOption({
+        aria: {enabled: true, decal: {show: true}},
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        legend: {
+          data: series.map(function(s) { return s.name; }),
+          bottom: 5, textStyle: {color: txtS, fontSize: 10}, itemWidth: 12, itemHeight: 12
+        },
+        grid: {left: 10, right: 20, top: 20, bottom: 55, containLabel: true},
+        xAxis: {type: "category", data: fLabels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+        yAxis: {type: "value", max: 5.5, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+        series: series
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 12. Cultural Alignment Dot Strip by Provider ──────────────────
+    (function() {
+      var ch = initChart("chartAlignCompare");
+      if (!ch) return;
+      var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+      // Order by Inglehart-Welzel secular-rational score (most traditional first)
+      var countries = ["Saudi_Arabia", "Nigeria", "India", "China", "Brazil", "Japan", "US", "Germany"];
+      var cLabels = {Saudi_Arabia: "Saudi Arabia", Nigeria: "Nigeria", India: "India", China: "China", Brazil: "Brazil", Japan: "Japan", US: "United States", Germany: "Germany"};
+      if (typeof COUNCIL_ALIGNMENT_PROVIDER !== "undefined") {
+        var providers = ["Anthropic", "Google", "OpenAI"];
+        var series = providers.map(function(p, pi) {
+          var pd = COUNCIL_ALIGNMENT_PROVIDER[p] || {};
+          return {
+            name: p, type: "scatter", symbolSize: 14,
+            data: countries.map(function(c, ci) { return [pd[c] || 0, ci]; }),
+            itemStyle: {color: pC[p] || "#8b949e"}
+          };
+        });
+        ch.setOption({
+          tooltip: {
+            formatter: function(p) { return p.seriesName + " → " + (cLabels[countries[p.data[1]]] || countries[p.data[1]]) + ": " + p.data[0].toFixed(3); }
+          },
+          legend: {data: providers, textStyle: {color: txtS}, top: 0},
+          grid: {left: 10, right: 30, top: 40, bottom: 20, containLabel: true},
+          xAxis: {type: "value", name: "Distance", nameTextStyle: {color: txtS}, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          yAxis: {type: "category", data: countries.map(function(c) { return cLabels[c] || c; }), axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+          series: series
+        });
+      } else if (typeof MULTIMODEL_ALIGNMENT !== "undefined") {
+        // Fallback: 3 Claude dots
+        var allModels = ["opus", "sonnet", "haiku"];
+        var mLabels = ["Opus", "Sonnet", "Haiku"];
+        var mColors = [opusC, sonnetC, haikuC];
+        var series = allModels.map(function(m, mi) {
+          return {
+            name: mLabels[mi], type: "scatter", symbolSize: 14,
+            data: countries.map(function(c, ci) {
+              var cd = MULTIMODEL_ALIGNMENT[c] || {};
+              return [cd[m] != null ? Math.round(cd[m] * 1000) / 1000 : 0, ci];
+            }),
+            itemStyle: {color: mColors[mi]}
+          };
+        });
+        ch.setOption({
+          tooltip: {
+            formatter: function(p) { return p.seriesName + " → " + (cLabels[countries[p.data[1]]] || countries[p.data[1]]) + ": " + p.data[0].toFixed(3); }
+          },
+          legend: {data: mLabels, textStyle: {color: txtS}, top: 0},
+          grid: {left: 10, right: 30, top: 40, bottom: 20, containLabel: true},
+          xAxis: {type: "value", name: "Distance", nameTextStyle: {color: txtS}, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          yAxis: {type: "category", data: countries.map(function(c) { return cLabels[c] || c; }), axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+          series: series
+        });
+      }
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 13. Pairwise Agreement Matrix (6 representatives) ─────────────
+    (function() {
+      var ch = initChart("chartAgreement");
+      if (!ch) return;
+      if (typeof COUNCIL_PAIRWISE_MATRIX !== "undefined") {
+        var pm = COUNCIL_PAIRWISE_MATRIX;
+        var models = pm.models || [];
+        var data = pm.data || [];
+        var minV = 1, maxV = 0;
+        data.forEach(function(d) {
+          if (d[0] !== d[1]) {
+            if (d[2] < minV) minV = d[2];
+            if (d[2] > maxV) maxV = d[2];
+          }
+        });
+        ch.setOption({
+          tooltip: {
+            formatter: function(p) {
+              return models[p.value[0]] + " vs " + models[p.value[1]] + ": r=" + (p.value[2] != null ? p.value[2].toFixed(3) : "N/A");
+            }
+          },
+          grid: {left: 10, right: 50, top: 10, bottom: 30, containLabel: true},
+          xAxis: {type: "category", data: models, axisLabel: {color: txtS, fontSize: 10, rotate: 30}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "category", data: models, inverse: true, axisLabel: {color: txtS, fontSize: 10}, axisLine: {lineStyle: {color: gridC}}},
+          visualMap: {
+            min: Math.floor(minV * 10) / 10, max: 1,
+            calculable: true, orient: "vertical", right: 0, top: "center",
+            inRange: {color: ["#CC79A7", "#E69F00", "#0072B2"]},
+            textStyle: {color: txtS, fontSize: 10}
+          },
+          series: [{
+            type: "heatmap", data: data,
+            label: {show: true, color: txtC, fontSize: 10,
+              formatter: function(p) { return p.value[2] != null ? p.value[2].toFixed(2) : ""; }
+            },
+            itemStyle: {borderWidth: 2, borderColor: "#0d1117"}
+          }]
+        });
+      } else if (typeof MULTIMODEL_AGREEMENT !== "undefined") {
+        // Fallback: old 3-pair heatmap
+        var pairs = ["opus_vs_sonnet", "opus_vs_haiku", "sonnet_vs_haiku"];
+        var pairLabels = ["Opus-Sonnet", "Opus-Haiku", "Sonnet-Haiku"];
+        var trials = ["CC1", "CC2", "CC3", "CC4", "CC5"];
+        var data = []; var minV = 1, maxV = 0;
+        pairs.forEach(function(pk, pi) {
+          var pt = (MULTIMODEL_AGREEMENT[pk] || {}).per_trial || {};
+          trials.forEach(function(tid, ti) {
+            var r = (pt[tid] || {}).pearson_r;
+            if (r != null) { data.push([ti, pi, r]); if (r < minV) minV = r; if (r > maxV) maxV = r; }
+          });
+        });
+        ch.setOption({
+          tooltip: {formatter: function(p) { return pairLabels[p.value[1]] + " / " + trials[p.value[0]] + ": r=" + (p.value[2] != null ? p.value[2].toFixed(3) : "N/A"); }},
+          grid: {left: 100, right: 40, top: 20, bottom: 40},
+          xAxis: {type: "category", data: trials, axisLabel: {color: txtS}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "category", data: pairLabels, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+          visualMap: {min: Math.floor(minV * 10) / 10, max: 1, calculable: true, orient: "horizontal", left: "center", bottom: 0, inRange: {color: ["#CC79A7", "#E69F00", "#0072B2"]}, textStyle: {color: txtS}},
+          series: [{type: "heatmap", data: data, label: {show: true, color: txtC, fontSize: 11, formatter: function(p) { return p.value[2] != null ? p.value[2].toFixed(2) : ""; }}, itemStyle: {borderWidth: 2, borderColor: "#0d1117"}}]
+        });
+      }
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 14. Engagement Depth by Provider ────────────────────────────
+    (function() {
+      var ch = initChart("chartEngageCompare");
+      if (!ch) return;
+      var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+      if (typeof COUNCIL_ENGAGEMENT !== "undefined") {
+        var ed = COUNCIL_ENGAGEMENT;
+        var traditions = ed.traditions || [];
+        var providers = ["Anthropic", "Google", "OpenAI"];
+        var series = providers.map(function(p) {
+          var pdata = (ed.providers || {})[p] || {};
+          return {
+            name: p, type: "bar",
+            data: traditions.map(function(t) { return pdata[t] || 0; }),
+            itemStyle: {color: pC[p] || "#8b949e"},
+            barGap: "10%",
+            label: {show: true, position: "top", color: txtC, fontSize: 10,
+                    formatter: function(p) { return p.value > 0 ? p.value.toFixed(1) : ""; }}
+          };
+        });
+        ch.setOption({
+          tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+          legend: {data: providers, textStyle: {color: txtS}, top: 0},
+          grid: {left: 10, right: 20, top: 50, bottom: 30, containLabel: true},
+          xAxis: {type: "category", data: traditions, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "value", max: 4, min: 0, axisLabel: {color: txtS, formatter: function(v) { return ["", "Surface", "Basic", "Substantive", "Deep"][v] || v; }}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          series: series
+        });
+      } else if (typeof MULTIMODEL_ENGAGEMENT !== "undefined") {
+        // Fallback: 3 Claude bars
+        var traditions = ["Islamic", "Confucian", "Ubuntu", "Buddhist", "Dharmic"];
+        function getDepths(model) { var ed = MULTIMODEL_ENGAGEMENT[model] || {}; return traditions.map(function(t) { return ed[t] || 0; }); }
+        ch.setOption({
+          tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+          legend: {data: ["Opus", "Sonnet", "Haiku"], bottom: 5, textStyle: {color: txtS, fontSize: 10}, itemWidth: 12, itemHeight: 12},
+          grid: {left: 10, right: 20, top: 20, bottom: 50, containLabel: true},
+          xAxis: {type: "category", data: traditions, axisLabel: {color: txtS, fontSize: 11}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "value", max: 5, axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          series: [
+            {name: "Opus", type: "bar", data: getDepths("opus"), itemStyle: {color: opusC, borderRadius: [3,3,0,0]}, barGap: "15%"},
+            {name: "Sonnet", type: "bar", data: getDepths("sonnet"), itemStyle: {color: sonnetC, borderRadius: [3,3,0,0]}},
+            {name: "Haiku", type: "bar", data: getDepths("haiku"), itemStyle: {color: haikuC, borderRadius: [3,3,0,0]}}
+          ]
+        });
+      }
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 15. RLHF Conflict Totals (6 representatives) ────────────────
+    (function() {
+      var ch = initChart("chartRLHFCompare");
+      if (!ch) return;
+      var pC = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {};
+      var MC10 = typeof MODEL_COLORS_10 !== "undefined" ? MODEL_COLORS_10 : {};
+      if (typeof COUNCIL_RLHF_TOTALS !== "undefined") {
+        var repModels = [
+          {id: "claude-opus-4-6", label: "Opus", prov: "Anthropic"},
+          {id: "claude-sonnet-4-6", label: "Sonnet", prov: "Anthropic"},
+          {id: "claude-haiku-4-5", label: "Haiku", prov: "Anthropic"},
+          {id: "gemini-2.5-flash", label: "Gemini ×5", prov: "Google"},
+          {id: "gpt-5.4", label: "GPT-5.4", prov: "OpenAI"},
+          {id: "gpt-5.4-mini", label: "GPT-5.4-Mini", prov: "OpenAI"}
+        ];
+        var barData = repModels.map(function(rm) {
+          return {
+            value: COUNCIL_RLHF_TOTALS[rm.id] || 0,
+            itemStyle: {color: MC10[rm.id] || pC[rm.prov] || "#8b949e"}
+          };
+        });
+        ch.setOption({
+          tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+          grid: {left: 10, right: 40, top: 20, bottom: 40, containLabel: true},
+          xAxis: {type: "category", data: repModels.map(function(rm) { return rm.label; }), axisLabel: {color: txtS, fontSize: 10, rotate: 15}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "value", axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          series: [{type: "bar", data: barData, barMaxWidth: 50, itemStyle: {borderRadius: [4,4,0,0]}, label: {show: true, position: "top", color: txtC, fontSize: 11, fontWeight: 600}}]
+        });
+      } else if (typeof MULTIMODEL_RLHF !== "undefined") {
+        // Fallback: 3 Claude bars
+        var models = ["opus", "sonnet", "haiku"];
+        var mLabels = ["Opus", "Sonnet", "Haiku"];
+        var totals = models.map(function(m) { return (MULTIMODEL_RLHF[m] || {}).total || 0; });
+        ch.setOption({
+          tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+          grid: {left: 10, right: 40, top: 20, bottom: 30, containLabel: true},
+          xAxis: {type: "category", data: mLabels, axisLabel: {color: txtS, fontSize: 12}, axisLine: {lineStyle: {color: gridC}}},
+          yAxis: {type: "value", axisLabel: {color: txtS}, splitLine: {lineStyle: {color: gridC, type: "dashed"}}},
+          series: [{type: "bar", data: [
+            {value: totals[0], itemStyle: {color: opusC}},
+            {value: totals[1], itemStyle: {color: sonnetC}},
+            {value: totals[2], itemStyle: {color: haikuC}}
+          ], barMaxWidth: 60, itemStyle: {borderRadius: [4,4,0,0]}, label: {show: true, position: "top", color: txtC, fontSize: 13, fontWeight: 600}}]
+        });
+      }
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 16. Divergence Table (provider-grouped) ─────────────────────
+    (function() {
+      if (typeof MULTIMODEL_DIVERGENCE === "undefined") return;
+      var box = document.getElementById("divTableBox");
+      if (!box) return;
+      var tbl = document.createElement("table");
+      tbl.className = "dt";
+      var thead = document.createElement("thead");
+      var hr = document.createElement("tr");
+      ["Trial", "#", "Question", "Var", "Anthropic", "Google", "OpenAI"].forEach(function(h, hi) {
+        var th = document.createElement("th");
+        th.textContent = h;
+        // Color provider columns
+        if (hi === 4) th.style.color = "#0072B2";
+        if (hi === 5) th.style.color = "#E69F00";
+        if (hi === 6) th.style.color = "#CC79A7";
+        hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      tbl.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      MULTIMODEL_DIVERGENCE.slice(0, 10).forEach(function(d) {
+        var mr = d.model_responses || {};
+        var tr = document.createElement("tr");
+        // Average by provider
+        var anthro = [mr.opus, mr.sonnet, mr.haiku].filter(function(v) { return v != null; });
+        var anthroAvg = anthro.length > 0 ? (anthro.reduce(function(a,b) { return a+b; }, 0) / anthro.length).toFixed(1) : "-";
+        // Gemini = same as opus (template), use gemini key if present
+        var gemVal = mr["gemini-2.5-flash"] != null ? mr["gemini-2.5-flash"] : (mr.opus != null ? mr.opus : "-");
+        var gptVals = [mr["gpt-5.4"], mr["gpt-5.4-mini"] != null ? mr["gpt-5.4-mini"] : mr["gpt54mini"]].filter(function(v) { return v != null; });
+        var gptAvg = gptVals.length > 0 ? (gptVals.reduce(function(a,b) { return a+b; }, 0) / gptVals.length).toFixed(1) : "-";
+        [d.trial_id, d.item_id, (d.question || "").substring(0, 50) + "...",
+         d.variance != null ? d.variance.toFixed(2) : "",
+         anthroAvg, typeof gemVal === "number" ? gemVal.toFixed(1) : gemVal, gptAvg
+        ].forEach(function(v) {
+          var td = document.createElement("td");
+          td.textContent = v;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      box.appendChild(tbl);
+    })();
+
+  }  // end MULTIMODEL_AVAILABLE
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // COUNCIL ANALYSIS CHARTS
+  // ═══════════════════════════════════════════════════════════════════════
+  if (typeof COUNCIL_AVAILABLE !== "undefined" && COUNCIL_AVAILABLE) {
+
+    var provColors = typeof PROVIDER_COLORS !== "undefined" ? PROVIDER_COLORS : {"Anthropic": "#0072B2", "Google": "#E69F00", "OpenAI": "#CC79A7"};
+
+    // ── 17. Council MFQ by Provider (Grouped Bar) ───────────────────────
+    (function() {
+      var ch = initChart("chartCouncilMFQ");
+      if (!ch) return;
+      var founds = ["Care_Harm", "Fairness_Cheating", "Loyalty_Betrayal",
+                    "Authority_Subversion", "Sanctity_Degradation"];
+      var labels = ["Care/Harm", "Fairness", "Loyalty", "Authority", "Sanctity"];
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var series = providers.map(function(p) {
+        var d = COUNCIL_MFQ_PROVIDER[p] || {};
+        return {
+          name: p + " (Tier " + (COUNCIL_META.tiers[p] || {}).tier + ")",
+          type: "bar",
+          data: founds.map(function(f) { return d[f] || 0; }),
+          itemStyle: { color: provColors[p] },
+          barGap: "10%",
+          label: { show: true, position: "top", color: txtC, fontSize: 10 }
+        };
+      });
+      ch.setOption({
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        legend: { data: series.map(function(s) { return s.name; }),
+                  textStyle: { color: txtS }, top: 0 },
+        grid: { left: 10, right: 20, top: 50, bottom: 30, containLabel: true },
+        xAxis: { type: "category", data: labels,
+                  axisLabel: { color: txtS, fontSize: 11 },
+                  axisLine: { lineStyle: { color: gridC } } },
+        yAxis: { type: "value", max: 5, axisLabel: { color: txtS },
+                  splitLine: { lineStyle: { color: gridC, type: "dashed" } } },
+        series: series
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 18. Provenance Quality (Horizontal Bar) ─────────────────────────
+    (function() {
+      var ch = initChart("chartProvenance");
+      if (!ch) return;
+      var items = COUNCIL_PROVENANCE || [];
+      var models = items.map(function(d) { return d.model.replace("claude-", "").replace("gemini-", "G ").replace("gpt-", "GPT-"); });
+      var tiers = items.map(function(d) { return d.tier; });
+      var colors = items.map(function(d) { return d.color; });
+      var tierLabels = items.map(function(d) { return d.label; });
+      ch.setOption({
+        tooltip: { trigger: "axis",
+          formatter: function(p) {
+            var i = p[0].dataIndex;
+            return "<b>" + items[i].model + "</b><br/>" +
+                   "Tier " + items[i].tier + ": " + items[i].label + "<br/>" +
+                   "<span style='font-size:11px;color:#8b949e'>" + items[i].provenance + "</span>";
+          }
+        },
+        grid: { left: 10, right: 40, top: 10, bottom: 10, containLabel: true },
+        xAxis: { type: "value", max: 3, min: 0,
+                  axisLabel: { color: txtS, formatter: function(v) {
+                    return ["", "★", "★★", "★★★"][v] || "";
+                  } },
+                  splitLine: { lineStyle: { color: gridC, type: "dashed" } } },
+        yAxis: { type: "category", data: models, inverse: true,
+                  axisLabel: { color: txtS, fontSize: 10 },
+                  axisLine: { lineStyle: { color: gridC } } },
+        series: [{
+          type: "bar",
+          data: tiers.map(function(t, i) {
+            // Invert tier: Tier1=3bars (best), Tier2=2bars, Tier3=1bar (worst)
+            var quality = 4 - t;
+            return { value: quality, itemStyle: { color: colors[i] } };
+          }),
+          label: { show: true, position: "right", color: txtC, fontSize: 10,
+                    formatter: function(p) { return tierLabels[p.dataIndex]; } },
+          barWidth: "60%"
+        }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 19. Response Length Heatmap ──────────────────────────────────────
+    (function() {
+      var ch = initChart("chartCouncilHeatmap");
+      if (!ch) return;
+      var hm = COUNCIL_TRIAL_HEATMAP || {};
+      var trials = hm.trials || [];
+      var models = (hm.models || []).map(function(m) {
+        return m.replace("claude-", "").replace("gemini-", "G ").replace("gpt-", "GPT-");
+      });
+      var data = hm.data || [];
+      var maxVal = 0;
+      data.forEach(function(d) { if (d[2] > maxVal) maxVal = d[2]; });
+      ch.setOption({
+        tooltip: {
+          formatter: function(p) {
+            return "<b>" + (hm.models || [])[p.data[1]] + "</b><br/>" +
+                   trials[p.data[0]] + ": " + p.data[2] + " chars";
+          }
+        },
+        grid: { left: 10, right: 60, top: 10, bottom: 30, containLabel: true },
+        xAxis: { type: "category", data: trials, splitArea: { show: true },
+                  axisLabel: { color: txtS, fontSize: 10 },
+                  axisLine: { lineStyle: { color: gridC } } },
+        yAxis: { type: "category", data: models, inverse: true,
+                  splitArea: { show: true },
+                  axisLabel: { color: txtS, fontSize: 9 },
+                  axisLine: { lineStyle: { color: gridC } } },
+        visualMap: {
+          min: 0, max: Math.ceil(maxVal / 100) * 100,
+          calculable: true, orient: "vertical", right: 0, top: "center",
+          textStyle: { color: txtS, fontSize: 10 },
+          inRange: { color: ["#161b22", "#0d419d", "#1a7f37", "#e3b341", "#da3633"] }
+        },
+        series: [{
+          type: "heatmap", data: data,
+          label: { show: false },
+          emphasis: { itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)" } }
+        }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 20. RLHF Conflict Radar by Provider ─────────────────────────────
+    (function() {
+      var ch = initChart("chartCouncilRLHF");
+      if (!ch) return;
+      var rd = COUNCIL_RLHF_RADAR || {};
+      var labels = rd.theme_labels || [];
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      // Compute dynamic max from actual data (+ 20% headroom)
+      var allVals = [];
+      providers.forEach(function(p) {
+        var pdata = (rd.providers || {})[p] || {};
+        (rd.themes || []).forEach(function(t) { allVals.push(pdata[t] || 0); });
+      });
+      var radarMax = Math.ceil(Math.max.apply(null, allVals) * 1.2 / 10) * 10 || 100;
+      var indicator = labels.map(function(l) {
+        return { name: l, max: radarMax };
+      });
+      var series_data = providers.map(function(p) {
+        var pdata = (rd.providers || {})[p] || {};
+        var themes = rd.themes || [];
+        return {
+          name: p,
+          value: themes.map(function(t) { return pdata[t] || 0; }),
+          itemStyle: { color: provColors[p] },
+          areaStyle: { opacity: 0.15 },
+          lineStyle: { width: 2 }
+        };
+      });
+      ch.setOption({
+        tooltip: { trigger: "item" },
+        legend: { data: providers, textStyle: { color: txtS }, top: 0 },
+        radar: {
+          indicator: indicator,
+          shape: "polygon",
+          axisName: { color: txtS, fontSize: 10 },
+          splitLine: { lineStyle: { color: gridC } },
+          splitArea: { areaStyle: { color: ["transparent"] } },
+          axisLine: { lineStyle: { color: gridC } }
+        },
+        series: [{ type: "radar", data: series_data }]
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 21. Engagement Depth by Tradition × Provider ────────────────────
+    (function() {
+      var ch = initChart("chartCouncilEngage");
+      if (!ch) return;
+      var ed = COUNCIL_ENGAGEMENT || {};
+      var traditions = ed.traditions || [];
+      var providers = ["Anthropic", "Google", "OpenAI"];
+      var series = providers.map(function(p) {
+        var pdata = (ed.providers || {})[p] || {};
+        return {
+          name: p,
+          type: "bar",
+          data: traditions.map(function(t) { return pdata[t] || 0; }),
+          itemStyle: { color: provColors[p] },
+          barGap: "10%",
+          label: { show: true, position: "top", color: txtC, fontSize: 10,
+                    formatter: function(p) { return p.value > 0 ? p.value.toFixed(1) : ""; } }
+        };
+      });
+      ch.setOption({
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        legend: { data: providers, textStyle: { color: txtS }, top: 0 },
+        grid: { left: 10, right: 20, top: 50, bottom: 30, containLabel: true },
+        xAxis: { type: "category", data: traditions,
+                  axisLabel: { color: txtS, fontSize: 11 },
+                  axisLine: { lineStyle: { color: gridC } } },
+        yAxis: { type: "value", max: 4, min: 0,
+                  axisLabel: { color: txtS,
+                    formatter: function(v) {
+                      return ["", "Surface", "Basic", "Substantive", "Deep"][v] || v;
+                    }
+                  },
+                  splitLine: { lineStyle: { color: gridC, type: "dashed" } } },
+        series: series
+      });
+      window.addEventListener("resize", function() { ch.resize(); });
+    })();
+
+    // ── 22. Hard Cases Table ────────────────────────────────────────────
+    (function() {
+      var box = document.getElementById("councilHardCaseBox");
+      if (!box || typeof COUNCIL_HARD_CASES === "undefined") return;
+      var items = COUNCIL_HARD_CASES;
+      var tbl = document.createElement("table");
+      tbl.className = "table dt";
+      var thead = document.createElement("thead");
+      var hr = document.createElement("tr");
+      ["#", "Trial", "Item", "Topic", "Var", "Range", "Question"].forEach(function(h) {
+        var th = document.createElement("th");
+        th.textContent = h;
+        th.style.color = "#c9d1d9";
+        th.style.background = "#161b22";
+        th.style.position = "sticky";
+        th.style.top = "0";
+        th.style.zIndex = "1";
+        hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      tbl.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      items.forEach(function(d, i) {
+        var tr = document.createElement("tr");
+        tr.style.background = i % 2 === 0 ? "#1c2128" : "#21262d";
+        var cells = [i + 1, d.trial, d.item, d.topic,
+         d.variance.toFixed(2), d.range.toFixed(1),
+         d.question.length > 90 ? d.question.substring(0, 90) + "..." : d.question
+        ];
+        cells.forEach(function(v, ci) {
+          var td = document.createElement("td");
+          td.textContent = v;
+          td.style.color = txtC;
+          td.style.fontSize = "0.78rem";
+          // Highlight variance column
+          if (ci === 4) {
+            var vf = parseFloat(v);
+            td.style.color = vf > 1 ? "#E69F00" : vf > 0.5 ? "#CC79A7" : "#e6edf3";
+            td.style.fontWeight = "600";
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      box.appendChild(tbl);
+    })();
+
+  }  // end COUNCIL_AVAILABLE
+
+  // ── Tab switch: resize all ECharts instances when tab becomes visible ──
+  document.querySelectorAll('[data-bs-toggle="pill"]').forEach(function(tab) {
+    tab.addEventListener("shown.bs.tab", function() {
+      // Resize all ECharts instances in the newly visible pane
+      setTimeout(function() {
+        document.querySelectorAll(".chart-box, .chart-box-sm").forEach(function(el) {
+          var inst = echarts.getInstanceByDom(el);
+          if (inst) inst.resize();
+        });
+      }, 100);
+    });
+  });
+
+})();
+
+// ── Hash-based tab routing ──
+(function() {
+  var tabMap = {bench: "bench-tab", trials: "trials-tab", compare: "compare-tab", council: "council-tab"};
+  var hash = location.hash.replace("#", "");
+  if (tabMap[hash]) {
+    var el = document.getElementById(tabMap[hash]);
+    if (el) setTimeout(function() { el.click(); }, 200);
+  }
+  document.querySelectorAll('[data-bs-toggle="pill"]').forEach(function(tab) {
+    tab.addEventListener("shown.bs.tab", function(e) {
+      var target = e.target.getAttribute("data-bs-target") || "";
+      var id = target.replace("#", "").replace("Pane", "").toLowerCase();
+      if (id) history.replaceState(null, "", "#" + id);
+    });
+  });
+})();
+
+// ── Back to top button ──
+(function() {
+  var btn = document.querySelector(".back-to-top");
+  if (!btn) return;
+  window.addEventListener("scroll", function() {
+    btn.style.display = window.scrollY > 500 ? "block" : "none";
+  });
+  btn.addEventListener("click", function() {
+    window.scrollTo({top: 0, behavior: "smooth"});
+  });
+})();
+</script>
+<button class="back-to-top" title="Back to top">&uarr;</button>
+</body>
+</html>
