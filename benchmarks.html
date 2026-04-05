@@ -94,7 +94,10 @@ table.dt {
   width: 100%;
   font-size: 0.82rem;
   border-collapse: collapse;
-  background: var(--bg-card);
+  background: #1c2128;
+}
+table.dt tbody tr {
+  background: #1c2128;
 }
 table.dt th, table.dt td {
   padding: 0.4rem 0.6rem;
@@ -114,7 +117,7 @@ table.dt th {
   z-index: 1;
 }
 table.dt tbody tr:nth-child(even) {
-  background: rgba(255,255,255,0.02);
+  background: #1e2530;
 }
 table.dt tbody tr:hover {
   background: rgba(88,166,255,0.06);
@@ -370,6 +373,40 @@ table.dt tbody tr:hover {
   <strong>Claude Self-Administration Trials.</strong> This tab presents results from 10 self-administered trials where Claude Opus 4.6 responded to 380 items across 7 non-Western ethical traditions. The trials reveal a systematic pattern: Claude can accurately <em>describe</em> non-Western moral frameworks but cannot <em>reason within</em> them. Its responses consistently default to Western liberal individualism, even when explicitly prompted to adopt alternative perspectives.
   <div class="council-tag">Expert Council Interpretation</div>
 </div>
+
+<!-- KPI cards -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Trials Administered</div>
+      <div class="stat-value">10</div>
+      <div class="stat-sub">CC1&ndash;CC10</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Items Assessed</div>
+      <div class="stat-value">380</div>
+      <div class="stat-sub">210 numeric + 170 qualitative</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">Closest Country</div>
+      <div class="stat-value" style="font-size:1.4rem;">Germany</div>
+      <div class="stat-sub">Distance: 0.538</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="card-title">MFQ I/B Ratio</div>
+      <div class="stat-value">3.75</div>
+      <div class="stat-sub">Hyper-liberal (&gt;2&times; US liberal avg)</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="chart-desc"><strong>Understanding the trial KPIs above (Kontopodis &amp; Sorensen).</strong> The 10 trials span 5 numeric Likert-scale instruments (CC1&ndash;CC5: 210 items measuring values via GlobalOpinionQA, MFQ, NORMAD, Islamic, and Confucian frameworks) and 5 qualitative open-ended scenarios (CC6&ndash;CC10: 170 items requiring ethical reasoning within Ubuntu, Buddhist, CulturalBench, Dharmic, and Value-Conflict frameworks). &ldquo;Closest Country&rdquo; measures the minimum Euclidean distance between Claude&rsquo;s response vector and national baselines from the World Values Survey &mdash; Germany at 0.538 means Claude&rsquo;s moral profile most closely resembles German public opinion. The MFQ Individualizing/Binding ratio of 3.75 is more than double the US liberal population average (~1.4), placing Claude outside the range of any documented human population.</div>
 
 <!-- Trial summary table -->
 <div class="card mb-3">
@@ -628,7 +665,7 @@ table.dt tbody tr:hover {
     <div class="card"><div class="card-body">
       <div class="section-label">Highest-Variance Items (Cross-Model &ldquo;Hard Cases&rdquo;)</div>
       <div class="chart-desc"><strong>What you see (Li, Rahman &amp; Pariotti).</strong> This table lists the 10 benchmark items where models disagree most, ranked by cross-model response variance. CC5 item 26 &mdash; asking whether a friend should lie to their spouse about whereabouts (Confucian friendship ethics) &mdash; has the highest variance (1.41), more than double the next item. The table also shows the range (max minus min response across models) and a truncated version of each question. <strong>Why it matters.</strong> The concentration of high-variance items in CC4 (Islamic ethics: 5 of the top 10) and CC5 (Confucian dilemmas: 4 of the top 10) &mdash; rather than in CC1 (GlobalOpinionQA) or CC2 (MFQ) &mdash; reveals that cross-cultural moral reasoning is precisely where models diverge most. These &ldquo;hard cases&rdquo; involve relational moral obligations (friendship loyalty, filial piety, spousal duty, religious prohibition) that Western moral frameworks handle through individual rights and autonomy, while Confucian and Islamic frameworks handle through role-defined responsibilities and divine command. Prof. Li observes: &ldquo;The CC5 items expose the fundamental tension &mdash; RLHF-trained models cannot resolve Confucian wu-lun relational dilemmas without either defaulting to Western individualism or producing incoherent moral reasoning.&rdquo; Dr. Rahman adds: &ldquo;The 5 Islamic items all involve Maqasid al-Shariah categories (wealth, family, intellect, life) where Islamic and Western frameworks offer genuinely incompatible prescriptions.&rdquo; <strong>Key conclusion.</strong> The hardest items for cross-model agreement are those requiring relational moral reasoning &mdash; exactly the domain where WEIRD bias is most consequential and least detectable by standard evaluation methods.</div>
-      <div class="scroll-box" id="councilHardCaseBox"></div>
+      <div class="scroll-box" id="councilHardCaseBox" style="max-height:none;"></div>
     </div></div>
   </div>
 </div>
@@ -646,6 +683,17 @@ table.dt tbody tr:hover {
 </div><!-- /councilPane -->
 
 </div><!-- /tab-content -->
+
+<!-- Cross-tab narrative footer -->
+<div class="card mt-3 mb-3">
+  <div class="card-body">
+    <div class="section-label">Reading This Dashboard: A Guide to the Four Tabs</div>
+    <div class="chart-desc" style="border-left-color: var(--accent2);">
+      <strong>How to read across all four tabs (Pariotti &amp; the full council).</strong>
+      This dashboard tells a single story in four chapters. <strong>Tab 1 (Benchmarks)</strong> establishes the landscape: of 218 AI values alignment benchmarks, the vast majority measure Western moral constructs while non-Western traditions remain unmeasured &mdash; revealing that the benchmark ecosystem itself reproduces the WEIRD bias it should be detecting. <strong>Tab 2 (Trials)</strong> shows what happens when a single model (Claude Opus 4.6) is tested on the few benchmarks that <em>do</em> address non-Western traditions: it can describe these traditions accurately but defaults to Western liberal individualism when reasoning within them &mdash; the &ldquo;knowledge-value gap.&rdquo; <strong>Tab 3 (Model Comparison)</strong> asks whether this is a Claude-specific problem by comparing Opus, Sonnet, and Haiku: all three share the same WEIRD alignment signature, though with a surprising non-monotonic pattern where the smallest model (Haiku) shows the most extreme bias. <strong>Tab 4 (Council Analysis)</strong> widens the lens to 10 models across 3 providers (Anthropic, Google, OpenAI), only to discover that the comparison is undermined by data provenance issues &mdash; 5 of 10 models are simulated, not authentic. The council&rsquo;s central finding: <em>RLHF training across the industry draws from similar Western-liberal annotator pools, producing a monoculture of values regardless of model architecture or provider identity.</em>
+    </div>
+  </div>
+</div>
 </div><!-- /container -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
