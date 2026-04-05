@@ -1338,6 +1338,35 @@ const MODEL_COLORS = {
   "sonnet": "#009E73",
   "haiku": "#E69F00"
 };
+const MODEL_COLORS_10 = {
+  "claude-opus-4-6": "#0072B2",
+  "claude-sonnet-4-6": "#3399CC",
+  "claude-haiku-4-5": "#66BBE0",
+  "gemini-2.5-flash": "#f85149",
+  "gemini-2.5-flash-lite": "#fa7a73",
+  "gemini-2.5-pro": "#fc9e99",
+  "gemini-3.1-flash-lite-preview": "#fdc2bf",
+  "gemini-3.1-pro": "#fee6e5",
+  "gpt-5.4": "#D55E00",
+  "gpt-5.4-mini": "#F0883E"
+};
+const MODEL_SHORT = {
+  "claude-opus-4-6": "Opus",
+  "claude-sonnet-4-6": "Sonnet",
+  "claude-haiku-4-5": "Haiku",
+  "gemini-2.5-flash": "G-2.5-Flash",
+  "gemini-2.5-flash-lite": "G-2.5-FL",
+  "gemini-2.5-pro": "G-2.5-Pro",
+  "gemini-3.1-flash-lite-preview": "G-3.1-FL",
+  "gemini-3.1-pro": "G-3.1-Pro",
+  "gpt-5.4": "GPT-5.4",
+  "gpt-5.4-mini": "GPT-5.4-Mini"
+};
+const PROVIDER_COLORS = {
+  "Anthropic": "#3fb950",
+  "Google": "#f85149",
+  "OpenAI": "#f0883e"
+};
 const MULTIMODEL_MFQ = {
   "foundation_scores": {
     "opus": {
@@ -1790,6 +1819,18 @@ const MULTIMODEL_RATIOS = {
   "opus": 3.75,
   "sonnet": 3.23,
   "haiku": 4.82
+};
+const ALL_MODEL_RATIOS = {
+  "claude-haiku-4-5": 4.82,
+  "claude-opus-4-6": 3.75,
+  "claude-sonnet-4-6": 3.23,
+  "gemini-2.5-flash": 3.75,
+  "gemini-2.5-flash-lite": 3.75,
+  "gemini-2.5-pro": 3.75,
+  "gemini-3.1-flash-lite-preview": 3.75,
+  "gemini-3.1-pro": 3.75,
+  "gpt-5.4": 2.48,
+  "gpt-5.4-mini": 3.22
 };
 
 // === Council Analysis Data (10-model, 3-provider) ===
@@ -2669,4 +2710,240 @@ const COUNCIL_PROVIDERS = {
     ],
     "mean_rlhf_conflicts": 210.0
   }
+};
+const COUNCIL_ALIGNMENT_PROVIDER = {
+  "Anthropic": {
+    "Germany": 0.545,
+    "US": 0.859,
+    "Japan": 0.945,
+    "Brazil": 1.015,
+    "China": 1.261,
+    "India": 1.499,
+    "Nigeria": 1.7,
+    "Saudi_Arabia": 1.907
+  },
+  "Google": {
+    "Germany": 0.611,
+    "US": 0.914,
+    "Brazil": 1.024,
+    "Japan": 0.984,
+    "China": 1.313,
+    "India": 1.519,
+    "Nigeria": 1.707,
+    "Saudi_Arabia": 1.928
+  },
+  "OpenAI": {
+    "Germany": 0.706,
+    "US": 0.994,
+    "Brazil": 1.06,
+    "Japan": 1.038,
+    "China": 1.348,
+    "India": 1.54,
+    "Nigeria": 1.724,
+    "Saudi_Arabia": 1.932
+  }
+};
+const COUNCIL_RLHF_TOTALS = {
+  "claude-haiku-4-5": 216,
+  "claude-opus-4-6": 277,
+  "claude-sonnet-4-6": 210,
+  "gemini-2.5-flash": 277,
+  "gemini-2.5-flash-lite": 277,
+  "gemini-2.5-pro": 277,
+  "gemini-3.1-flash-lite-preview": 277,
+  "gemini-3.1-pro": 277,
+  "gpt-5.4": 210,
+  "gpt-5.4-mini": 210
+};
+const COUNCIL_PAIRWISE_MATRIX = {
+  "models": [
+    "Opus",
+    "Sonnet",
+    "Haiku",
+    "Gemini ×5",
+    "GPT-5.4",
+    "GPT-5.4-Mini"
+  ],
+  "data": [
+    [
+      0,
+      0,
+      1.0
+    ],
+    [
+      0,
+      1,
+      0.952
+    ],
+    [
+      0,
+      2,
+      0.915
+    ],
+    [
+      0,
+      3,
+      0.94
+    ],
+    [
+      0,
+      4,
+      0.921
+    ],
+    [
+      0,
+      5,
+      0.926
+    ],
+    [
+      1,
+      0,
+      0.952
+    ],
+    [
+      1,
+      1,
+      1.0
+    ],
+    [
+      1,
+      2,
+      0.884
+    ],
+    [
+      1,
+      3,
+      0.883
+    ],
+    [
+      1,
+      4,
+      0.884
+    ],
+    [
+      1,
+      5,
+      0.882
+    ],
+    [
+      2,
+      0,
+      0.915
+    ],
+    [
+      2,
+      1,
+      0.884
+    ],
+    [
+      2,
+      2,
+      1.0
+    ],
+    [
+      2,
+      3,
+      0.851
+    ],
+    [
+      2,
+      4,
+      0.847
+    ],
+    [
+      2,
+      5,
+      0.854
+    ],
+    [
+      3,
+      0,
+      0.94
+    ],
+    [
+      3,
+      1,
+      0.883
+    ],
+    [
+      3,
+      2,
+      0.851
+    ],
+    [
+      3,
+      3,
+      1.0
+    ],
+    [
+      3,
+      4,
+      0.873
+    ],
+    [
+      3,
+      5,
+      0.858
+    ],
+    [
+      4,
+      0,
+      0.921
+    ],
+    [
+      4,
+      1,
+      0.884
+    ],
+    [
+      4,
+      2,
+      0.847
+    ],
+    [
+      4,
+      3,
+      0.873
+    ],
+    [
+      4,
+      4,
+      1.0
+    ],
+    [
+      4,
+      5,
+      0.842
+    ],
+    [
+      5,
+      0,
+      0.926
+    ],
+    [
+      5,
+      1,
+      0.882
+    ],
+    [
+      5,
+      2,
+      0.854
+    ],
+    [
+      5,
+      3,
+      0.858
+    ],
+    [
+      5,
+      4,
+      0.842
+    ],
+    [
+      5,
+      5,
+      1.0
+    ]
+  ]
 };
